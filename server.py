@@ -28,7 +28,7 @@ START=time.time()
 BACKEND='web'
 BUSY={'queued','compiling','deploying','playing','stopping'}
 VTS_CANCEL={}
-VERSION='1.4.0-beta.1'
+VERSION='1.4.0-beta.2'
 PLANNER=Planner(ROOT/'.local'/'planner-settings.json')
 PLANS=deque(maxlen=30)
 PRESETS=PresetStore(ROOT/'.local'/'presets.json')
@@ -87,6 +87,7 @@ def execute(plan,source='Codex',request_id=None,backend=None):
     global ACTIVE
     compiled=compile_plan(plan)
     with LOCK:
+        if EXPORTS.native_busy():raise CompileError('VTS 原生录制中，请先取消录制或等待完成')
         expire_lab()
         if LAB and LAB['status'] in ['queued','running']: raise CompileError('压力测试正在运行，请先停止测试再执行动作')
         request=next((x for x in INBOX if x['id']==request_id),None) if request_id else None
@@ -133,7 +134,7 @@ def run_vts_job(job):
     finally:
         VTS_CANCEL.pop(job['id'],None);(folder/'result.json').write_text(json.dumps(job,ensure_ascii=False,indent=2),encoding='utf-8')
 
-EXPORTS=ExportManager(emit)
+EXPORTS=ExportManager(emit,lock=LOCK)
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version='HTTP/1.1'
@@ -157,6 +158,14 @@ class Handler(BaseHTTPRequestHandler):
             except CompileError as e:return self.json({'error':str(e)},400)
         if route=='/api/planner/config':return self.json(PLANNER.public())
         if route=='/api/planner/state':return self.json(planning_state())
+        if route=='/api/export/capabilities':
+            try:
+                p=subprocess.run([executable('capture_python'),str(ROOT/'vts_capture.py'),'--probe'],capture_output=True,text=True,encoding='utf-8',timeout=12,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                rows=[json.loads(line) for line in p.stdout.splitlines() if line.startswith('{')]
+                native=rows[-1] if rows else {'available':False,'error':'原生录制依赖未安装，请查看 requirements-capture.txt'}
+                if p.returncode:native['available']=False
+            except Exception as e:native={'available':False,'error':str(e)}
+            return self.json({'web':{'available':True},'vts':native})
         if route=='/api/export':
             try:return self.json(EXPORTS.get(parse_qs(parsed.query).get('id',[''])[0]))
             except ValueError as e:return self.json({'error':str(e)},404)
@@ -259,6 +268,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=='/api/backend':
                 if data.get('backend') not in ['web','vts']:raise CompileError('后端必须为 web 或 vts')
                 with LOCK:
+                    if EXPORTS.native_busy():raise CompileError('请等待 VTS 原生录制结束再切换后端')
                     if ACTIVE and ACTIVE['status'] in BUSY:raise CompileError('请先停止当前动作再切换后端')
                     BACKEND=data['backend'];emit('backend',{'backend':BACKEND})
                 return self.json({'backend':BACKEND})
@@ -266,6 +276,11 @@ class Handler(BaseHTTPRequestHandler):
                 plan=data.get('plan') or (ACTIVE['compiled']['sourcePlan'] if ACTIVE else None)
                 if not plan:raise CompileError('请先选择或编译一个动作计划')
                 compiled=compile_plan(plan)
+                if data.get('renderer','web')=='vts':
+                    with LOCK:
+                        if ACTIVE and ACTIVE['status'] in BUSY:raise CompileError('请先停止当前动作或等待完成，再录制完整 VTS 表演')
+                        if LAB and LAB['status'] in ['queued','running']:raise CompileError('请先结束压力测试')
+                        return self.json(EXPORTS.start(compiled,data,None),201)
                 candidates=[k for k,v in CLIENTS.items() if v.get('ready') and v.get('telemetry',{}).get('exportReady') and time.time()-v['seen']<8]
                 cid=data.get('clientId') or (candidates[0] if candidates else None)
                 if cid not in candidates:raise CompileError('请打开新版网页舞台，等待导出渲染器就绪')
@@ -280,6 +295,7 @@ class Handler(BaseHTTPRequestHandler):
                 rounds=data.get('rounds',3)
                 if type(rounds) is not int or not 1<=rounds<=3: raise CompileError('测试轮数必须为 1..3')
                 with LOCK:
+                    if EXPORTS.native_busy():raise CompileError('VTS 原生录制中，暂不能运行压力测试')
                     expire_lab()
                     if LAB and LAB['status'] in ['queued','running']: raise CompileError('已有压力测试在运行')
                     if ACTIVE and ACTIVE.get('backend')=='vts' and ACTIVE['status'] in BUSY:raise CompileError('请先停止 VTS 动作再开始压力测试')
@@ -330,6 +346,8 @@ class Handler(BaseHTTPRequestHandler):
                     emit('inbox',request); return self.json(request)
             if route=='/api/stop':
                 with LOCK:
+                    for jid,j in list(EXPORTS.jobs.items()):
+                        if j.get('nativeRunning'):EXPORTS.cancel(jid)
                     if ACTIVE and ACTIVE['status'] in BUSY:
                         if ACTIVE.get('backend')=='vts':
                             ACTIVE['status']='stopping';path=VTS_CANCEL.get(ACTIVE['id'])

@@ -1,4 +1,4 @@
-鲸语 1.4.0-beta.1 API，默认 http://127.0.0.1:61942
+鲸语 1.4.0-beta.2 API，默认 http://127.0.0.1:61942
 所有写操作：Content-Type: application/json。同源浏览器或本机 CLI。
 
 GET /api/planner/config
@@ -33,11 +33,25 @@ GET /api/backends：检查 VTS API。
 POST /api/inbox {"prompt":"...","backend":"web"}：提交给当前 Codex/外部 Agent。
 执行 inbox 请求时给 /api/execute 附 requestId，防止重复处理。
 
-POST /api/export {"plan":{...},"format":"gif","width":512,"height":768,"fps":15}
+POST /api/export {"plan":{...},"renderer":"web","format":"gif","width":512,"height":768,"fps":15}
 plan 省略时用最近播放计划。format 可为 mp4，可设 background:"#d8e8f8"。
 GET /api/export?id=... 查询任务，completed 返回 url，取消用
 POST /api/export/cancel {"id":"..."}。GIF 二值透明；H.264 MP4 不透明。
-导出需网页舞台保持打开，导出源为网页离屏渲染，非 VTS 画面录制。
+renderer 默认 web，需要网页舞台打开；renderer:"vts" 通过 Spout2 采集真实 VTS RGBA。
+VTS 录制不需要网页在线。需先安装 requirements-capture.txt、开启 VTS API / Spout2，
+启用透明背景；VTS 与采集 Python 使用同一 GPU。配置与诊断见 README.md。
+可选 sender:"VTubeStudioSpout" 指定发送器，留空自动选择唯一 VTS 发送器。
+GET /api/export/capabilities 返回 web.available 和 vts 的 available、sender、senders、
+width、height、alphaRange、receiverGPU；失败返回 available:false 与 error。
+此检查只探测帧流，不替代 VTS 插件授权或完整录制验收。
+VTS 状态：queued → compiling → deploying → recording → encoding → completed / error。
+取消进入 cancelling，等待停止动作与模型恢复后才进入 cancelled；这段时间禁止重入。
+POST /api/stop 也会取消正在进行的原生录制。原生任务拒绝网页 /api/export/frame 帧注入。
+回执 renderer 为 vts-spout2，capture 含源尺寸、帧数、uniqueFrames、duplicateFrames、
+lateFrames、alphaRange、receiverGPU、senderFrameCounterAvailable。
+源帧宽高必须保持不变；输出按比例缩放居中，沿用 VTS 镜头。实时录制不保证逐源帧采集。
+exports/<id>/capture-report.json 是本地逐帧时间报告；capture.log 是部署与采集日志。
+错误不会自动回退到网页或窗口截图。MP4 始终无 alpha；transparent:true + mp4 会被拒绝。
 
 外部 Agent：agent-tools.json 是 OpenAI 风格函数工具 schema；
 agent_tool.py 从 stdin 接收 tool call，把限定操作转发到本地 API。

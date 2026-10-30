@@ -1,4 +1,4 @@
-鲸语 Live2D 动作工作台 1.4.0-beta.1 · Windows 本地测试版
+鲸语 Live2D 动作工作台 1.4.0-beta.2 · Windows 本地测试版
 
 启动
 1. 安装 Python 3.10+，并按 README.md 准备模型与 Live2D Cubism Core。公开仓库不含模型或 Core。
@@ -46,9 +46,14 @@ API 热部署会短暂卸载/重载专用模型；不会修改原始包。
 完整 FFmpeg 需包含 gif、libx264、palettegen、paletteuse、overlay。
 将 ffmpeg/ffprobe 加入 PATH，或参考 runtime-config.example.json 创建
 runtime-config.json；也可设置 FFMPEG、FFPROBE 环境变量。
-舞台需保持打开。选择 GIF 或 MP4 后导出当前已执行的动作计划；CLI 可直接
+网页导出需舞台保持打开。选择 GIF 或 MP4 后导出当前已执行的动作计划；CLI 可直接
 指定计划导出。GIF 透明度为二值，MP4 合成背景、没有透明通道。
-两者都由网页渲染器离屏采样；VTS 原生帧缓冲导出尚未接入。
+导出源可切换 VTS 原生 Spout2。安装独立 Python 3.12 环境及 requirements-capture.txt，
+开启 VTS API、Spout2 和透明背景；VTS 与采集 Python 使用同一 GPU。
+详细安装、双显卡设置与自检命令见 README.md 的“VTS 原生录制”。
+原生路径不依赖网页，保持 VTS 可见，录制时不要改变窗口尺寸、模型与透明背景。
+沿用 VTS 镜头并按比例留边；会热部署后重播完整计划。取消时等待 VTS 恢复，
+持续落后、断流、尺寸变化或整段冻结会报错，不会用网页画面冒充原生录制。
 
 接口示例（在工程目录）
 python bridge_cli.py planner-config
@@ -58,6 +63,7 @@ python bridge_cli.py state
 python bridge_cli.py stop
 python bridge_cli.py execute examples/hotdeploy-left.json --backend vts --wait
 python bridge_cli.py export examples/hotdeploy-left.json --format gif --wait
+python bridge_cli.py export examples/hotdeploy-left.json --renderer vts --format mp4 --wait
 python agent_tool.py --schemas
 详细 HTTP API 见 BETA-API.txt。
 

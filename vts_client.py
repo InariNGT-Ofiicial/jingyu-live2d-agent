@@ -1,10 +1,10 @@
 """Loopback VTS client. Correlated replies; tokens encrypted with Windows DPAPI."""
-import argparse, ctypes, json, time, uuid
+import argparse, ctypes, json, time, uuid, os
 from pathlib import Path
 import websocket
 
 PLUGIN = {'pluginName':'Jingyu Motion Bridge','pluginDeveloper':'Jingyu Local Agent'}
-TOKEN = Path(__file__).resolve().parent/'.local'/'vts-token.dpapi'
+TOKEN = Path(os.getenv('L2D_VTS_TOKEN_FILE') or Path(__file__).resolve().parent/'.local'/'vts-token.dpapi')
 
 def protect(data, decrypt=False):
     class Blob(ctypes.Structure):

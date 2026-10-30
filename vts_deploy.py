@@ -28,7 +28,7 @@ def reload_model(v,mid,position):
     load_model(v,'');time.sleep(2.2)
     load_model(v,mid);wait_model(v,mid)
     v.call('MoveModelRequest',{'timeInSeconds':0,'valuesAreRelativeToModel':False,**position})
-def deploy(jobfile,cancel,port=8001):
+def deploy(jobfile,cancel,port=8001,recorder=None):
     jobfile=Path(jobfile);job=read_json(jobfile);folder=jobfile.parent;mid=read_json(MODEL_ROOT/'大肥鱼.vtube.json')['ModelID']
     manifest=ensure_import();dest=Path(manifest['destination']).resolve()
     if dest==MODEL_ROOT.resolve() or MODEL_ROOT.resolve() in dest.parents or dest.name!='Jingyu-Author-Comparison':raise ValueError('热部署只允许已导入的专用测试副本')
@@ -66,7 +66,10 @@ def deploy(jobfile,cancel,port=8001):
         if not any(x['hotkeyID']==HOTKEY and x['file']==motion.name for x in hs):raise RuntimeError('VTS 未加载新动作热键')
         if cancel.exists():announce('interrupted',progress=0);return
         keep={'faceFound':True,'mode':'set','parameterValues':[{'id':'FaceAngleX','value':0,'weight':0}]}
+        if recorder:recorder.prepare()
+        if cancel.exists():announce('interrupted',progress=0);return
         v.call('InjectParameterDataRequest',keep);v.call('HotkeyTriggerRequest',{'hotkeyID':HOTKEY});playing=True;t0=time.monotonic();duration=job['compiled']['duration'];announce('playing',progress=0,motion=motion.name)
+        if recorder:recorder.start(t0)
         while time.monotonic()-t0<duration+1:
             if cancel.exists():
                 announce('stopping',progress=min(1,(time.monotonic()-t0)/duration));reload_model(v,mid,position);playing=False;announce('interrupted',progress=0);return

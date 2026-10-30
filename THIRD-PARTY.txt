@@ -9,6 +9,13 @@ its original header and vendor terms remain applicable:
 https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
 
 Runtime download sources and original hashes: vendor-sources.json.
+Optional Windows native capture: SpoutGL 0.1.1, BSD-3-Clause,
+https://github.com/jlai/Python-SpoutGL (license snapshot: licenses/SpoutGL-LICENSE.txt).
+Spout SDK: https://github.com/leadedge/Spout2 (BSD-2-Clause).
+Pillow 12.2.0: https://github.com/python-pillow/Pillow (HPND).
+websocket-client 1.9.0: https://github.com/websocket-client/websocket-client (Apache-2.0).
+Capture dependencies are installed by the user; no wheels or compiled SDK binaries are bundled.
+VTS Spout configuration: https://github.com/DenchiSoft/VTubeStudio/wiki/Recording-Streaming-with-OBS
 Local drawable color backport: patch_renderer.py and renderer-patch.json.
 Original copyright headers remain in the runtime files.
 License text snapshots for open-source dependencies: licenses/.

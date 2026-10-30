@@ -19,6 +19,7 @@ if __name__=='__main__':
     p.add_argument('--output');p.add_argument('--port',type=int,default=8001)
     p.add_argument('--backend',choices=['web','vts']);p.add_argument('--format',choices=['gif','mp4'],default='gif')
     p.add_argument('--width',type=int,default=512);p.add_argument('--height',type=int,default=768);p.add_argument('--fps',type=int,default=15)
+    p.add_argument('--renderer',choices=['web','vts'],default='web');p.add_argument('--sender',default='')
     p.add_argument('--background',default='#f5f7f5');p.add_argument('--transparent',action='store_true');p.add_argument('--wait',action='store_true');a=p.parse_args()
     if a.command=='planner-config':
         result=request(a.url,'/api/planner/config',json.loads(Path(a.value).read_text(encoding='utf-8-sig')) if a.value else None)
@@ -60,7 +61,7 @@ if __name__=='__main__':
         if a.value not in ['web','vts']:p.error('backend 需要 web 或 vts')
         result=request(a.url,'/api/backend',{'backend':a.value})
     elif a.command=='export':
-        payload={'format':a.format,'width':a.width,'height':a.height,'fps':a.fps,'background':a.background,'transparent':a.transparent}
+        payload={'format':a.format,'width':a.width,'height':a.height,'fps':a.fps,'background':a.background,'transparent':a.transparent,'renderer':a.renderer,'sender':a.sender}
         if a.value:payload['plan']=json.loads(Path(a.value).read_text(encoding='utf-8-sig'))
         result=request(a.url,'/api/export',payload)
         if a.wait:

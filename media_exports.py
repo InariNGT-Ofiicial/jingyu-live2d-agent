@@ -4,9 +4,15 @@ from pathlib import Path
 from model_profile import ROOT
 from runtime_tools import executable
 class ExportManager:
-    def __init__(self,emit):
-        self.emit=emit;self.lock=threading.RLock();self.jobs={};self.procs={}
-        self.scratch=ROOT.parents[1]/'work'/'exports';self.output=ROOT/'exports'
+    def __init__(self,emit,lock=None):
+        # Share the server's reentrant state lock: emit() and command guards also
+        # acquire it, so separate locks would invert order during native capture.
+        self.emit=emit;self.lock=lock if lock is not None else threading.RLock();self.jobs={};self.procs={}
+        self.scratch=ROOT/'.local'/'export-frames';self.output=ROOT/'exports'
+    def native_busy(self):
+        with self.lock:return any(j.get('nativeRunning') for j in self.jobs.values())
+    def busy(self):
+        with self.lock:return any(j.get('nativeRunning') or j['status'] in ['queued','rendering','recording','compiling','deploying','encoding','cancelling'] for j in self.jobs.values())
     def public(self,j):return {k:v for k,v in j.items() if k not in ['compiled','bytes','token','busy']}
     def get(self,jid):
         with self.lock:
@@ -18,6 +24,10 @@ class ExportManager:
             if j['status'] in ['queued','rendering'] and time.time()-j['updated']>120:self.fail(jid,'渲染端 120 秒未响应，请重新导出')
             return self.public(j)
     def start(self,compiled,options,client):
+        renderer=options.get('renderer','web')
+        if renderer not in ['web','vts']:raise ValueError('导出 renderer 必须为 web 或 vts')
+        sender=options.get('sender','')
+        if not isinstance(sender,str) or len(sender)>256:raise ValueError('sender 必须是最多 256 字符的 Spout 名称')
         fmt=options.get('format','gif');w=options.get('width',512);h=options.get('height',768);fps=options.get('fps',15)
         if fmt not in ['gif','mp4']:raise ValueError('导出格式为 gif 或 mp4')
         if any(type(x)is not int for x in [w,h,fps]) or not 128<=w<=1280 or not 128<=h<=1280 or w%2 or h%2 or not 5<=fps<=30:raise ValueError('尺寸为 128..1280 偶数；帧率为 5..30 整数')
@@ -32,15 +42,57 @@ class ExportManager:
         if not re.search(r'\s'+encoder+r'\s',check.stdout):raise ValueError(f'当前 FFmpeg 缺少 {encoder} 编码器，请配置完整构建')
         with self.lock:
             for old in list(self.jobs):self.get(old)
-            if any(j['status'] in ['queued','rendering','encoding'] for j in self.jobs.values()):raise ValueError('已有导出正在进行，请等待完成或取消')
+            if self.busy():raise ValueError('已有导出正在进行，请等待完成或取消')
             jid=uuid.uuid4().hex[:12];j={'id':jid,'format':fmt,'width':w,'height':h,'fps':fps,'frameCount':frames,'duration':frames/fps,'planDuration':compiled['duration'],'background':background,'transparent':fmt=='gif','renderer':'web-cubism','clientId':client,'compiled':compiled,'token':uuid.uuid4().hex,'status':'queued','received':0,'bytes':0,'progress':0,'updated':time.time(),'createdAt':time.time()}
             self.jobs[jid]=j;(self.scratch/jid).mkdir(parents=True);(self.output/jid).mkdir(parents=True)
+            if renderer=='vts':
+                j.update(renderer='vts-spout2',clientId=None,sender=sender,nativeRunning=True)
+                threading.Thread(target=self.record_native,args=(jid,),daemon=True).start()
+                return self.public(j)
             self.emit('export',dict(j));return self.public(j)
+    def record_native(self,jid):
+        j=self.jobs[jid];folder=self.scratch/jid;cancel=folder/'cancel';captured=False;error=None;timer=None
+        try:
+            options={k:j[k] for k in ['format','width','height','fps','frameCount','sender']}
+            jobfile=folder/'job.json';jobfile.write_text(json.dumps({'id':jid,'compiled':j['compiled'],'capture':options},ensure_ascii=False),encoding='utf-8')
+            with (self.output/jid/'capture.log').open('w',encoding='utf-8') as log:
+                p=subprocess.Popen([executable('capture_python'),'-u',str(ROOT/'vts_capture.py'),'--job',str(jobfile),'--cancel',str(cancel)],stdout=subprocess.PIPE,stderr=log,text=True,encoding='utf-8',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                self.procs[jid]=p
+                def timeout():
+                    cancel.touch()
+                    if p.poll() is None:p.kill()
+                timer=threading.Timer(j['duration']+180,timeout);timer.daemon=True;timer.start()
+                for line in p.stdout:
+                    log.write(line);log.flush()
+                    try:event=json.loads(line)
+                    except ValueError:continue
+                    with self.lock:
+                        if event.get('status')=='error':error=event.get('error')
+                        if event.get('status')=='captured':
+                            captured=event.get('received')==j['frameCount'];j['capture']=event.get('capture',{})
+                        if j['status']!='cancelling' and event.get('status') in ['compiling','deploying','recording']:
+                            j.update(status=event['status'],updated=time.time(),progress=event.get('progress',j['progress']),received=event.get('received',j['received']))
+                            self.emit('export-status',self.public(j))
+                code=p.wait()
+            with self.lock:
+                j['nativeRunning']=False
+                if j['status']=='cancelling':
+                    j.update(status='cancelled',updated=time.time());self.emit('export-status',self.public(j));return
+                if code or not captured:raise RuntimeError(error or 'VTS 原生采集失败，请检查 capture.log 和 Spout 依赖')
+                report=folder/'capture-report.json'
+                if report.is_file():(self.output/jid/'capture-report.json').write_bytes(report.read_bytes())
+                j.update(status='encoding',received=j['frameCount'],progress=.8,updated=time.time());self.emit('export-status',self.public(j))
+            self.procs.pop(jid,None);self.encode(jid)
+        except Exception as e:self.fail(jid,e)
+        finally:
+            if timer:timer.cancel()
+            j['nativeRunning']=False;self.procs.pop(jid,None)
     def frame(self,data):
         jid=data.get('id')
         with self.lock:
             j=self.jobs.get(jid)
             if not j or data.get('token')!=j['token'] or data.get('clientId')!=j['clientId']:raise ValueError('导出会话不匹配')
+            if j['renderer']!='web-cubism':raise ValueError('原生导出不接受网页帧')
             if j['status'] not in ['queued','rendering']:raise ValueError('导出任务已停止接收帧')
             if type(data.get('index'))is not int or data['index']!=j['received']:raise ValueError('帧序号必须连续，禁止重复或跳帧')
             if j['received']>=j['frameCount']:raise ValueError('超出计划帧数')
@@ -62,6 +114,8 @@ class ExportManager:
             j=self.jobs.get(jid)
             if not j:raise ValueError('导出任务不存在')
             if j['status'] not in ['completed','error','cancelled']:
+                if j.get('nativeRunning'):
+                    (self.scratch/jid/'cancel').touch();j.update(status='cancelling',updated=time.time());self.emit('export-status',self.public(j));return self.public(j)
                 j.update(status='cancelled',updated=time.time());p=self.procs.get(jid)
                 if p and p.poll() is None:p.terminate()
                 self.emit('export-status',self.public(j))

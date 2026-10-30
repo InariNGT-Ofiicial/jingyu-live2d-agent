@@ -12,7 +12,7 @@ let toastTimer;
 let backend='web',exportId=null,exportPoll=null;
 const exporter=new FrameExporter({api,clientId,onProgress:showExport,getRenderer:()=>pixi?.renderer});
 function showExport(job,message){
-  exportId=job.id;$('export-status').textContent=message||({queued:'等待渲染',rendering:'正在渲染',encoding:'正在编码',completed:'导出完成',cancelled:'已取消',error:job.error}[job.status]||job.status);
+  exportId=job.id;$('export-status').textContent=message||({queued:'等待渲染',rendering:'正在渲染',compiling:'正在编译 VTS 动作',deploying:'正在部署 VTS 动作',recording:'正在采集 VTS 原生画面',cancelling:'正在停止录制并恢复 VTS',encoding:'正在编码',completed:'导出完成',cancelled:'已取消',error:job.error}[job.status]||job.status);
   if(!['completed','error','cancelled'].includes(job.status)){$('export-button').disabled=true;$('export-download').hidden=true;}
   $('export-progress').value=job.progress||0;$('export-cancel').disabled=['completed','error','cancelled'].includes(job.status);
   if(job.status==='completed'){$('export-download').href=job.url;$('export-download').download=`jingyu-${job.id}.${job.format}`;$('export-download').hidden=false;}
@@ -171,9 +171,11 @@ function mountControls(){
   $('backend-select').onchange=async e=>{const previous=backend;try{const r=await api('/api/backend',{backend:e.target.value});applyBackend(r.backend);}catch(error){applyBackend(previous);toast(error.message);}};
   $('backend-check').onclick=async()=>{try{const r=await api('/api/backends');$('backend-note').textContent=r.vts.available?'VTS API 在线 · 首次连接需在 VTS 允许插件。':r.vts.error;}catch(e){toast(e.message);}};
   $('export-format').onchange=()=>{$('export-background').disabled=$('export-format').value==='gif';};
+  $('export-renderer').onchange=()=>{$('export-source-note').textContent=$('export-renderer').value==='vts'?'重播当前计划并采集 VTS Spout 原生画面，沿用 VTS 镜头；请保持 VTS 运行。':'网页渲染器固定步长采样，全身画面。';};
+  $('capture-check').onclick=async()=>{try{const c=(await api('/api/export/capabilities')).vts;$('export-status').textContent=c.available?`${c.sender} · ${c.width} × ${c.height} · alpha ${c.alphaRange.join('–')}`:c.error||'VTS Spout 未就绪';}catch(e){toast(e.message);}};
   $('export-button').onclick=async()=>{
     $('export-button').disabled=true;$('export-download').hidden=true;
-    try{const [width,height]=$('export-size').value.split('x').map(Number);const job=await api('/api/export',{clientId,format:$('export-format').value,width,height,fps:Number($('export-fps').value),background:$('export-background').value});showExport(job);clearInterval(exportPoll);exportPoll=setInterval(async()=>{try{showExport(await api(`/api/export?id=${job.id}`));}catch(e){clearInterval(exportPoll);$('export-button').disabled=false;toast(e.message);}},1000);}
+    try{const [width,height]=$('export-size').value.split('x').map(Number);const job=await api('/api/export',{clientId,renderer:$('export-renderer').value,sender:$('export-sender').value.trim(),format:$('export-format').value,width,height,fps:Number($('export-fps').value),background:$('export-background').value});showExport(job);clearInterval(exportPoll);exportPoll=setInterval(async()=>{try{showExport(await api(`/api/export?id=${job.id}`));}catch(e){clearInterval(exportPoll);$('export-button').disabled=false;toast(e.message);}},1000);}
     catch(e){$('export-button').disabled=false;toast(e.message);}
   };
   $('export-cancel').onclick=async()=>{if(exportId)try{showExport(await api('/api/export/cancel',{id:exportId}));}catch(e){toast(e.message);}};

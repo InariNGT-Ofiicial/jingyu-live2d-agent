@@ -5,6 +5,8 @@ from model_profile import ROOT,read_json
 def executable(name):
     config=read_json(ROOT/'runtime-config.json') if (ROOT/'runtime-config.json').exists() else {}
     candidates=[os.environ.get(name.upper()),config.get(name)]
+    if name=='capture_python':
+        candidates += [str(ROOT/'.local/vts-capture/Scripts/python.exe'),sys.executable]
     if name=='python':candidates.append(sys.executable)
     candidates.append(shutil.which(name))
     if name=='node':candidates.append(str(Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe'))

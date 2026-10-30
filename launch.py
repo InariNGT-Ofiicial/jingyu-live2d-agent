@@ -23,14 +23,14 @@ def main():
  for rel in [refs['Moc'],*refs['Textures']]:
   if not (MODEL_ROOT/rel).is_file():raise SystemExit('缺少模型资产：'+rel)
  if a.check:
-  print(json.dumps({'version':'1.4.0-beta.1','python':sys.version.split()[0],'modelReady':True},ensure_ascii=False));return
+  print(json.dumps({'version':'1.4.0-beta.2','python':sys.version.split()[0],'modelReady':True},ensure_ascii=False));return
  saved.parent.mkdir(exist_ok=True);saved.write_text(str(model.resolve()),encoding='utf-8')
  url=f'http://127.0.0.1:{a.port}'
  try:
   with urlopen(url+'/api/state',timeout=2) as r:state=json.load(r)
  except OSError:state=None
  if state is not None:
-  if state.get('version')!='1.4.0-beta.1':raise SystemExit('端口已有其他版本服务，请先关闭它或选择其他 --port')
+  if state.get('version')!='1.4.0-beta.2':raise SystemExit('端口已有其他版本服务，请先关闭它或选择其他 --port')
  else:
   logs=ROOT/'logs';logs.mkdir(exist_ok=True)
   with (logs/'server.log').open('a',encoding='utf-8') as stdout,(logs/'server-error.log').open('a',encoding='utf-8') as stderr:
