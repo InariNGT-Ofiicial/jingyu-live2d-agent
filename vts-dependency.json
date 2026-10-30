@@ -1,0 +1,22 @@
+{
+  "name": "VTube Studio",
+  "kind": "optional-external-runtime",
+  "installUrl": "https://store.steampowered.com/app/1325860/VTube_Studio/",
+  "bundled": false,
+  "api": "VTubeStudioPublicAPI 1.0",
+  "testedHostVersion": "1.35.10",
+  "connection": "ws://127.0.0.1:8001",
+  "pythonDependencies": "requirements-vts.txt",
+  "authentication": "User enables plugin API and approves Jingyu Motion Bridge; token stored using Windows DPAPI in ignored .local/vts-token.dpapi",
+  "validatedRoutes": [
+    "30 Hz tracking injection with strict author mapping compatibility",
+    "canonical performance 15 as native one-shot animation",
+    "generic compiled plans through native hot deployment: two opposite directions and different gestures",
+    "API cancellation via dedicated model unload/reload"
+  ],
+  "notYetValidated": [
+    "video-level visual comparison",
+    "VTS framebuffer export with native physics"
+  ],
+  "distribution": "Distribute bridge source, manifest and setup instructions. VTS and model assets require separate installation and their own applicable terms."
+}

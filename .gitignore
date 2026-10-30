@@ -1,0 +1,33 @@
+# Model and proprietary runtime must be obtained separately.
+model/
+*.moc3
+*.psd
+*.model3.json
+*.physics3.json
+*.exp3.json
+*.motion3.json
+web/vendor/live2dcubismcore.min.js
+web/data/model-profile.json
+# Personal state, credentials, generated media and diagnostics.
+.local/
+.env
+.env.*
+runtime-config.json
+*.dpapi
+logs/
+exports/
+evidence/
+research/
+stress/
+work/
+__pycache__/
+*.py[cod]
+*.zip
+*.mp4
+*.gif
+.venv/
+
+web/data/stress-catalog.json
+drawables-inventory.json
+
+performances/*-result.json

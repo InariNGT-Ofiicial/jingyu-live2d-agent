@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "title": "作者 VTS 映射一致的头身校准",
+  "actions": [
+    {
+      "kind": "trajectory",
+      "duration": 12,
+      "frames": [
+        {
+          "time": 1,
+          "values": {
+            "AngleX": 24,
+            "PositionX": 24,
+            "AngleY": 18,
+            "PositionY": 12,
+            "AngleZ": 15,
+            "PositionZ": 15
+          }
+        },
+        {
+          "time": 4,
+          "values": {
+            "AngleX": 24,
+            "PositionX": 24,
+            "AngleY": 18,
+            "PositionY": 12,
+            "AngleZ": 15,
+            "PositionZ": 15
+          }
+        },
+        {
+          "time": 8,
+          "values": {
+            "AngleX": -24,
+            "PositionX": -24,
+            "AngleY": -18,
+            "PositionY": -12,
+            "AngleZ": -15,
+            "PositionZ": -15
+          }
+        },
+        {
+          "time": 10,
+          "values": {
+            "AngleX": -24,
+            "PositionX": -24,
+            "AngleY": -18,
+            "PositionY": -12,
+            "AngleZ": -15,
+            "PositionZ": -15
+          }
+        }
+      ]
+    }
+  ]
+}

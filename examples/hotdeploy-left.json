@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "title": "害羞侧目后抚胸致意",
+  "intent": "先向左侧看，有一点害羞地抚胸，带笑低头致意，然后自然回正放下手。",
+  "view": "full",
+  "actions": [
+    {
+      "kind": "trajectory",
+      "at": 0,
+      "duration": 6,
+      "frames": [
+        {
+          "time": 1,
+          "values": {
+            "AngleX": -24,
+            "AngleZ": -12,
+            "PositionX": -15,
+            "AngleY": 0
+          }
+        },
+        {
+          "time": 3,
+          "values": {
+            "AngleX": -24,
+            "AngleZ": -12,
+            "PositionX": -15,
+            "AngleY": 0
+          }
+        },
+        {
+          "time": 4.6,
+          "values": {
+            "AngleX": -8,
+            "AngleY": -12,
+            "AngleZ": 6,
+            "PositionX": -5
+          }
+        }
+      ]
+    },
+    {
+      "kind": "expression",
+      "name": "脸红",
+      "at": 0.4,
+      "duration": 5.5,
+      "strength": 0.5
+    },
+    {
+      "kind": "smile",
+      "at": 1,
+      "duration": 5.5,
+      "strength": 0.65
+    },
+    {
+      "kind": "gesture",
+      "name": "hand_on_chest",
+      "at": 1.3,
+      "duration": 4.8
+    },
+    {
+      "kind": "blink",
+      "at": 3.7,
+      "duration": 0.6
+    }
+  ]
+}

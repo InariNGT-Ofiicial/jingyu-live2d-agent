@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "title": "听到夸奖后的回应",
+  "intent": "听到夸奖有一点害羞，先低头眨一下眼，然后带着笑容抚胸点头致谢，最后自然放下手。",
+  "summary": "先低头与轻微脸红，随后抚胸、微笑点头，收手回到待机。",
+  "actions": [
+    {"kind":"look","direction":"down","at":0,"duration":2.4,"strength":0.35},
+    {"kind":"blink","at":0.65,"duration":0.65},
+    {"kind":"expression","name":"脸红","at":0.2,"duration":5.5,"strength":0.45},
+    {"kind":"smile","at":1.2,"duration":6.3,"strength":0.6},
+    {"kind":"gesture","name":"hand_on_chest","at":2.5,"duration":4.8},
+    {"kind":"nod","at":4.1,"duration":2.2,"count":1,"strength":0.4}
+  ]
+}

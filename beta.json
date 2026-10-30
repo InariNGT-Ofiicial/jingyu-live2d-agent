@@ -1,0 +1,1 @@
+{"name":"鲸语 Live2D 动作工作台","version":"1.4.0-beta.1","platform":"Windows","port":61942,"providers":["OpenAI Chat Completions","OpenAI Responses","DSH desktop account","external Agent HTTP/CLI"],"backends":["web","vts"],"exports":["transparent GIF","opaque H.264 MP4"],"modelBundled":false}

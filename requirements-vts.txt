@@ -1,0 +1,2 @@
+# Optional VTS backend only. Web backend remains independent.
+websocket-client==1.9.0

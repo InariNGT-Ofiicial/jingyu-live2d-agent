@@ -1,0 +1,52 @@
+鲸语 1.4.0-beta.1 API，默认 http://127.0.0.1:61942
+所有写操作：Content-Type: application/json。同源浏览器或本机 CLI。
+
+GET /api/planner/config
+返回 provider、protocol、baseUrl、model、jsonMode、hasApiKey、dshAvailable、ready。
+不返回 apiKey。ready 表示配置或启动器存在，并不代替真实服务调用验证。
+
+POST /api/planner/config
+{"provider":"dsh"}
+或 {"provider":"openai","protocol":"responses","baseUrl":"https://api.openai.com/v1",
+    "model":"你的模型ID","apiKey":"你的Key","jsonMode":true}
+另一个协议名是 chat_completions。Key 省略保持，空字符串清除。
+更换 Base URL 且未提交新 Key 时清除旧 Key。拒绝包含用户口令/查询参数的 URL。
+远程使用 HTTPS，本机可用 HTTP。编排期间禁止更改配置。
+
+POST /api/planner/run
+{"prompt":"先侧目，再抚胸微笑","backend":"vts"}
+HTTP 202 返回任务 id。GET /api/planner/state 查询 tasks。
+queued → generating → repairing(最多一次) → validated / error / cancelled。
+任务记录并固定所选 backend，后续更改前台选择不会改写已生成计划的目标。
+
+POST /api/planner/execute  {"taskId":"..."}
+只允许 validated 计划执行一次，返回执行 job；task 转为 executed 并记录 jobId。
+GET /api/state 在 jobs 中跟踪该 jobId 到 completed/error/interrupted。
+POST /api/planner/cancel {"taskId":"..."} 丢弃迟到结果，不承诺撤销远程请求。
+POST /api/stop {} 停止播放；与取消编排是两个独立动作。
+
+GET /api/capabilities：真实动作能力、参数边界、原生手势、表情与时间约束。
+POST /api/compile {"plan":{...}}：只校验。
+POST /api/execute {"plan":{...},"backend":"web"}：执行已有计划。
+POST /api/backend {"backend":"web"或"vts"}：前台预设默认后端。
+GET /api/backends：检查 VTS API。
+POST /api/inbox {"prompt":"...","backend":"web"}：提交给当前 Codex/外部 Agent。
+执行 inbox 请求时给 /api/execute 附 requestId，防止重复处理。
+
+POST /api/export {"plan":{...},"format":"gif","width":512,"height":768,"fps":15}
+plan 省略时用最近播放计划。format 可为 mp4，可设 background:"#d8e8f8"。
+GET /api/export?id=... 查询任务，completed 返回 url，取消用
+POST /api/export/cancel {"id":"..."}。GIF 二值透明；H.264 MP4 不透明。
+导出需网页舞台保持打开，导出源为网页离屏渲染，非 VTS 画面录制。
+
+外部 Agent：agent-tools.json 是 OpenAI 风格函数工具 schema；
+agent_tool.py 从 stdin 接收 tool call，把限定操作转发到本地 API。
+bridge_cli.py 支持所有主要接口；--url 可改端口。
+
+OpenAI 协议依据：https://developers.openai.com/api/docs/guides/structured-outputs
+JSON 模式仅保证语法形状，不保证动作语义；compiler.py 始终二次验证真实能力。
+
+用户预设：GET /api/presets；POST /api/presets/save {name,plan}（重新编译校验）；
+POST /api/presets/play {id,backend}；POST /api/presets/delete {id}。
+重播：POST /api/replay {jobId,backend}，或 /api/planner/replay {taskId,backend}。
+重播生成新执行任务，不调用语言模型；已有动作执行中拒绝叠加。

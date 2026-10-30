@@ -1,0 +1,17 @@
+[
+  {
+    "file": "CubismWebFramework-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/Live2D/CubismWebFramework/d4da0aa07e47d2c1e4f5fa7ea6047861ea5e5d0b/LICENSE.md",
+    "sha256": "7ed849bff1e6499aa7cd882e47d246ddbbe06817c1e84cb974df949488302614"
+  },
+  {
+    "file": "pixi-live2d-display-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/guansss/pixi-live2d-display/31317b37d5e22955a44d5b11f37f421e94a11269/LICENSE",
+    "sha256": "8ccace668a041e78ed525d091b0b5daf8b623ff447f912616de535415e4f302f"
+  },
+  {
+    "file": "pixi.js-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/pixijs/pixijs/v6.5.10/LICENSE",
+    "sha256": "536a16e090f0b6c1454a7c0b47ee8414a39a2f1724a154f10ca1edc750a2dcfd"
+  }
+]

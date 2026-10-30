@@ -1,0 +1,57 @@
+# Invocation-only overlay. Never edits a DSH profile or copies credentials.
+- id: authorization
+  disabled: false
+- id: credentials
+  disabled: false
+- id: deepseek-account
+  disabled: false
+  config:
+    desktopPlatform: win32
+- id: agent-default-model
+  config:
+    provider: !!js process.env.L2D_DSH_PROVIDER ?? 'deepseek-account'
+    model: !!js process.env.L2D_DSH_MODEL ?? 'deepseek-flash'
+- id: system-prompt
+  config:
+    includeRuntimeContext: false
+    personaPrefix: >-
+      You compile a user's Live2D intent into the JSON schema supplied in the
+      message. Return only the requested JSON. Never call tools, access files,
+      execute code, or delegate. The caller validates the plan before playback.
+    personaSuffix: ''
+- id: agent-instructions
+  disabled: true
+- id: skill-filesystem
+  disabled: true
+- id: session-title-llm
+  disabled: true
+- id: tool-plugin-manager
+  disabled: true
+- id: tool-bash
+  disabled: true
+- id: tool-pwsh
+  disabled: true
+- id: tool-jobs
+  disabled: true
+- id: tool-fs
+  disabled: true
+- id: tool-fs-search
+  disabled: true
+- id: tool-skill
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: tool-web
+  disabled: true
+- id: tool-goal
+  disabled: true
+- id: tool-todo
+  disabled: true

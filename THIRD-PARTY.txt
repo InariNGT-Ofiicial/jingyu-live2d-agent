@@ -1,0 +1,23 @@
+Third-party notices for public source repository
+
+PixiJS 6.5.10: MIT, https://github.com/pixijs/pixijs/tree/v6.5.10
+pixi-live2d-display 0.4.0: MIT, https://github.com/guansss/pixi-live2d-display
+Live2D Cubism Web Framework: Live2D Open Software License,
+https://github.com/Live2D/CubismWebFramework/blob/develop/LICENSE.md
+Live2D Cubism Core: Live2D proprietary software license. Core is NOT included in this repository. Obtain it from the official SDK;
+its original header and vendor terms remain applicable:
+https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
+
+Runtime download sources and original hashes: vendor-sources.json.
+Local drawable color backport: patch_renderer.py and renderer-patch.json.
+Original copyright headers remain in the runtime files.
+License text snapshots for open-source dependencies: licenses/.
+
+No VTube Studio, DSH, Python, Node, FFmpeg executable or personal credential is
+included. These external dependencies keep their respective terms.
+The code-only package excludes model/PSD/textures. The local full package includes
+the user's received model assets and their original usage notice in model/.
+That notice prohibits unauthorized redistribution of the complete model files.
+Model credits:
+Illustration and separation: 神宫凉子. Live2D modeling: 霓虹猫_NeonNeko.
+Obtaining this bridge does not grant a license to distribute the character assets.
