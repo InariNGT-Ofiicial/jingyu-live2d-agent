@@ -134,6 +134,8 @@ python agent_tool.py --schemas
 ```
 
 完整接口见 [BETA-API.txt](BETA-API.txt)，依赖与设置见 [BETA-README.txt](BETA-README.txt)。
+旧命令 `python bridge_cli.py vts-perform 15` 通过桥接服务播放公开表演 15 并等待最终回执；
+用 `--url` 指定服务地址，`--output` 可保存回执，旧 `--port` 参数会提示迁移。
 `GET /api/presets`；`POST /api/presets/save`、`/play`、`/delete`；
 `POST /api/replay` 或 `/api/planner/replay` 可重播。
 HTTP 入队成功不等于表演完成；以任务 `completed / error / interrupted` 回执为准。
