@@ -6,6 +6,10 @@ model/
 *.physics3.json
 *.exp3.json
 *.motion3.json
+*.cdi3.json
+*.vtube.json
+**/textures/
+**/Textures/
 web/vendor/live2dcubismcore.min.js
 web/data/model-profile.json
 # Personal state, credentials, generated media and diagnostics.
@@ -31,3 +35,4 @@ web/data/stress-catalog.json
 drawables-inventory.json
 
 performances/*-result.json
+.pytest_cache/

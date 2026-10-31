@@ -1,0 +1,4 @@
+# Public contract tests only; no GPU, SpoutGL, VTS or model download.
+Pillow==12.2.0
+# Imported by the mocked VTS deployment tests; no socket is opened.
+-r requirements-vts.txt

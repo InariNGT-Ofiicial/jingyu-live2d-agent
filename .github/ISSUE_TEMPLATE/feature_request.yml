@@ -1,0 +1,23 @@
+name: 功能建议
+description: 描述使用场景、期望行为和限制
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 希望解决的具体问题
+      description: 描述当前操作和受限之处；不要包含私密提示词、密钥或角色资产。
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 期望行为与验收方式
+      description: 说明网页 / VTS / API / CLI 的预期表现，以及怎样判断完成。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案、兼容性或依赖
+      description: 可选；说明已有方案、是否需要新模型能力或外部服务。

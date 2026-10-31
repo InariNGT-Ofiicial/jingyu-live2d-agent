@@ -12,11 +12,13 @@
     "30 Hz tracking injection with strict author mapping compatibility",
     "canonical performance 15 as native one-shot animation",
     "generic compiled plans through native hot deployment: two opposite directions and different gestures",
-    "API cancellation via dedicated model unload/reload"
+    "API cancellation via dedicated model unload/reload",
+    "beta.2 native Spout2 RGBA capture, transparent GIF and composited H.264 MP4 on the previously tested Windows/GPU setup"
   ],
   "notYetValidated": [
     "video-level visual comparison",
-    "VTS framebuffer export with native physics"
+    "native capture performance and GPU compatibility on other hardware"
   ],
+  "validationNote": "Historical beta.2 results are not a release gate. Re-run docs/RELEASE-CHECKLIST.md for each candidate; public CI uses synthetic contract data only.",
   "distribution": "Distribute bridge source, manifest and setup instructions. VTS and model assets require separate installation and their own applicable terms."
 }
