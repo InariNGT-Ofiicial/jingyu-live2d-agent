@@ -176,6 +176,20 @@ VTS Spout 2560×1600 源已实测透明 GIF 与 512×768 / 15 FPS MP4；
 动作任务和编排历史存于内存，重启清空；个人预设、配置与导出文件保留。
 服务只监听本机，勿将端口直接暴露到公网。
 
+## 贡献者
+
+感谢参与开发、问题定位、平台适配和验证的贡献者：
+
+| 贡献者 | 贡献内容 | 公开记录与状态 |
+| --- | --- | --- |
+| [InariNGT-Ofiicial](https://github.com/InariNGT-Ofiicial) | 项目开发与维护，贡献流程、CI 和旧 VTS CLI 修复 | [#1](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/pull/1)、[#3](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/pull/3) 已合入 |
+| [nyvaelefluffRuaRua](https://github.com/nyvaelefluffRuaRua) | 尾巴等遮挡部件的锯齿问题定位与裁剪蒙版精度修复提案 | [#2](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/pull/2) 审查中，尚未合入 |
+| [hmhyzw](https://github.com/hmhyzw) | macOS 平台适配、VTS 热部署验证与桌面悬浮窗提案 | [#5](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/pull/5) 由作者暂时撤回，待优化稳定后重新提交，尚未合入 |
+
+提案状态以对应 PR 的最新记录为准；致谢不代表相关功能已进入发布版本。
+已合入提交的作者也可在 [GitHub 贡献记录](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/graphs/contributors) 中查看。
+参与方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
 ## 第三方依赖
 
 第三方库、原始版权头与许可见 [THIRD-PARTY.txt](THIRD-PARTY.txt) 和 `licenses/`。
