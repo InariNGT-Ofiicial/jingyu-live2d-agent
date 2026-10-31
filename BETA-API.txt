@@ -37,7 +37,7 @@ POST /api/export {"plan":{...},"renderer":"web","format":"gif","width":512,"heig
 plan 省略时用最近播放计划。format 可为 mp4，可设 background:"#d8e8f8"。
 GET /api/export?id=... 查询任务，completed 返回 url，取消用
 POST /api/export/cancel {"id":"..."}。GIF 二值透明；H.264 MP4 不透明。
-renderer 默认 web，需要网页舞台打开；renderer:"vts" 通过 Spout2 采集真实 VTS RGBA。
+renderer 默认 web，需要网页舞台打开；renderer:"vts" 通过 Spout2 采集真实 VTS RGBA（仅 Windows）。
 VTS 录制不需要网页在线。需先安装 requirements-capture.txt、开启 VTS API / Spout2，
 启用透明背景；VTS 与采集 Python 使用同一 GPU。配置与诊断见 README.md。
 可选 sender:"VTubeStudioSpout" 指定发送器，留空自动选择唯一 VTS 发送器。

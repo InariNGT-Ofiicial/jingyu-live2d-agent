@@ -48,7 +48,7 @@ API 热部署会短暂卸载/重载专用模型；不会修改原始包。
 runtime-config.json；也可设置 FFMPEG、FFPROBE 环境变量。
 网页导出需舞台保持打开。选择 GIF 或 MP4 后导出当前已执行的动作计划；CLI 可直接
 指定计划导出。GIF 透明度为二值，MP4 合成背景、没有透明通道。
-导出源可切换 VTS 原生 Spout2。安装独立 Python 3.12 环境及 requirements-capture.txt，
+导出源可切换 VTS 原生 Spout2（仅 Windows）。安装独立 Python 3.12 环境及 requirements-capture.txt，
 开启 VTS API、Spout2 和透明背景；VTS 与采集 Python 使用同一 GPU。
 详细安装、双显卡设置与自检命令见 README.md 的“VTS 原生录制”。
 原生路径不依赖网页，保持 VTS 可见，录制时不要改变窗口尺寸、模型与透明背景。

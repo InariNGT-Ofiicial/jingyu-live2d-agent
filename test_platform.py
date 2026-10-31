@@ -145,13 +145,18 @@ class CaptureGuardTests(unittest.TestCase):
 
 class RuntimeResolutionTests(unittest.TestCase):
     def test_symlinked_venv_python_keeps_its_path(self):
+        # Windows venv launchers are real copies, so the symlink trap is POSIX-only.
+        if ps.IS_WINDOWS:
+            self.skipTest('venv launchers are not symlinks on Windows')
         import runtime_tools
         with tempfile.TemporaryDirectory() as folder:
             link = Path(folder) / 'python3'
-            link.symlink_to(sys.executable)
+            try:
+                link.symlink_to(sys.executable)
+            except OSError:
+                self.skipTest('this machine does not allow symlinks')
             with patch.dict(os.environ, {'PYTHON': str(link)}):
                 self.assertEqual(runtime_tools.executable('python'), str(link))
-                self.assertNotEqual(runtime_tools.executable('python'), str(Path(sys.executable).resolve()))
 
 
 class WindowsBranchTests(unittest.TestCase):

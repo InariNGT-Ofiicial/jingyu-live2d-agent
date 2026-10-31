@@ -7,7 +7,7 @@
   "testedHostVersion": "1.35.10",
   "connection": "ws://127.0.0.1:8001",
   "pythonDependencies": "requirements-vts.txt",
-  "authentication": "User enables plugin API and approves Jingyu Motion Bridge; token stored using Windows DPAPI in ignored .local/vts-token.dpapi",
+  "authentication": "User enables plugin API and approves Jingyu Motion Bridge; token kept in the ignored .local/vts-token.dpapi on Windows (DPAPI) and in the macOS login keychain",
   "validatedRoutes": [
     "30 Hz tracking injection with strict author mapping compatibility",
     "canonical performance 15 as native one-shot animation",
