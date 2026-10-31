@@ -56,6 +56,19 @@ Windows 用 DPAPI 加密后写到 `.local/vts-token.dpapi`；macOS 默认写入�
 清除令牌：删除 `.local/vts-token.dpapi`，或
 `security delete-generic-password -s "Jingyu Motion Bridge"`。
 
+### 首次联调清单（macOS）
+
+1. 用 Steam 安装 macOS 版 VTS，先手动启动一次，让它生成模型目录。
+2. VTS 设置里打开插件 API（默认 `127.0.0.1:8001`）。
+3. `python3 vts_doctor.py` —— 只读体检，逐项告诉你还差什么。
+4. `python3 vts_setup.py` —— 复制一份作者模型为 `Jingyu-Author-Comparison`（不改原目录）。
+5. 重启一次 VTS，让它扫描到新副本。
+6. `python3 vts_doctor.py --approve` —— 触发插件授权，在 VTS 弹窗点允许，令牌进钥匙串。
+7. `python3 bridge_cli.py execute examples/hotdeploy-left.json --backend vts --wait`
+
+第 7 步走的是插件 API 的 `HotkeyTriggerRequest`，不依赖键盘热键；但 VTS 窗口保持可见更稳。
+`vts_doctor.py` 是只读的：不写文件、不复制模型、不触发播放（`--approve` 只做正常的授权弹窗）。
+
 ### 原生录制为什么没有 macOS 版
 
 Spout2 是 DirectX 共享纹理，macOS 没有等价 API；`requirements-capture.txt` 里的 SpoutGL 只有 Windows 轮子
