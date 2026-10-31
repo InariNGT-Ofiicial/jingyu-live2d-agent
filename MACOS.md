@@ -9,8 +9,8 @@ Windows 版的行为没有改动：平台判断是并列分支，Windows 仍然�
 |---|---|---|
 | 网页舞台、动作编排、预设、重播 | ✅ | ✅ 已实测 |
 | 网页渲染导出 GIF / MP4 | ✅ | ✅ 已实测（FFmpeg 需带 `gif`、`libx264`、`palettegen`、`paletteuse`、`overlay`） |
-| VTS 连接、鉴权、参数实时注入 | ✅ | ✅ 走同一套插件 API（本机未装 VTS，未实机验证） |
-| VTS 热部署（写专用副本 + 触发原生动作） | ✅ | ✅ 已适配路径与令牌存储，未实机验证 |
+| VTS 连接、鉴权、参数实时注入 | ✅ | ✅ 已实机验证（macOS 27.2 / VTS 1.35.10） |
+| VTS 热部署（写专用副本 + 触发原生动作） | ✅ | ✅ 已实机验证（热键 + 参数轨迹） |
 | VTS 原生帧流采集（Spout2） | ✅ | ❌ 不可能：Spout2 是 DirectX 共享纹理 |
 | 显卡偏好设置 `setup_capture_gpu.py` | ✅ | — 无需该步骤，脚本会直接说明并退出 |
 
@@ -118,7 +118,22 @@ L2D_MODEL_DIR="/path/to/DeepSeek" python3 -m unittest test_compiler test_driver_
 node test_engine.mjs && node test_driver_integration.mjs
 ```
 
-本机（macOS 27.2 / arm64、Python 3.14.7、Node 24.22.1、FFmpeg 9.0.2）实测：Python 66 项通过
-（含 18 项平台契约测试、10 项 RGBA 录制测试），Node 2 组通过；网页舞台渲染 509 参数 / 131 物理 / 715 画元，
-7.2 秒计划执行到 `completed`，256×384 / 10 FPS 透明 GIF 导出成功。
-VTS 相关路径因本机未安装 VTube Studio，只做了路径与进程级验证，未做真机联调。
+本机（macOS 27.2 / arm64、Python 3.14.7、Node 24.22.1、FFmpeg 9.0.2、VTube Studio 1.35.10）实测：
+
+- Python 67 项通过（含 20 项平台契约测试、10 项 RGBA 录制测试），Node 2 组通过。
+- 网页舞台渲染 509 参数 / 131 物理 / 715 画元；7.2 秒计划执行到 `completed`；256×384 / 10 FPS 透明 GIF 导出成功。
+- VTS 真机链路：安装识别 → 专用副本导入 → 插件授权（令牌入钥匙串）→ 热部署 → 原生动作播放 → 回收，
+  全链路 `completed`。轨迹（35 个采样）显示 `AngleX` 到 -24、`AngleZ` -12…+5.9、
+  作者手势参数 `Movement2` 0→1→0、`key7` 0.5、`ParamMouthForm` 0.52、`EyeSmile` 0.42，
+  8.13 秒后回到待机；VTS 端 `Jingyu Agent Live` 热键指向部署的 `Jingyu-Auto-*.motion3.json`，
+  副本 `ModelID` 未被改写，模型位置在部署后被还原。
+
+### 真机暴露并已修复的问题
+
+| 问题 | 原因 | 处理 |
+|---|---|---|
+| 明明装了 VTS 却"未找到" | Steam 实际装的是 `VTubeStudio.app`，官方 wiki 写的是 `VTube Studio.app` | 改为探测安装根目录下任意 `*.app` |
+| 热部署子进程报 `No module named 'websocket'` | `runtime_tools.executable()` 用了 `resolve()`，把 venv 的软链 python 解析回基础解释器，丢掉 site-packages | 改为只做绝对化、不跟随软链（补了回归测试） |
+| 体检把已授权的会话报成"等待授权" | `APIStateResponse` 用的是 `currentSessionAuthenticated`，不是 `authenticationRequired` | 按实际字段判断，并在授权后重读 |
+
+另外 VTS 端口被占用时会顺延到 8002，体检现在在 8001–8005 之间自动探测。

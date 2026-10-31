@@ -4,7 +4,7 @@ These run on any host and never touch a real VTube Studio install, the model,
 or the login keychain: paths are resolved inside temporary trees, and the token
 store is exercised with L2D_VTS_TOKEN_BACKEND=file.
 """
-import os, stat, subprocess, tempfile, unittest
+import os, stat, subprocess, sys, tempfile, unittest
 from pathlib import Path
 from unittest.mock import patch
 import platform_support as ps
@@ -141,6 +141,17 @@ class CaptureGuardTests(unittest.TestCase):
         self.assertEqual(vts_capture.choose_sender(['VTubeStudioSpout', 'OBS']), 'VTubeStudioSpout')
         with self.assertRaises(ValueError):
             vts_capture.choose_sender([])
+
+
+class RuntimeResolutionTests(unittest.TestCase):
+    def test_symlinked_venv_python_keeps_its_path(self):
+        import runtime_tools
+        with tempfile.TemporaryDirectory() as folder:
+            link = Path(folder) / 'python3'
+            link.symlink_to(sys.executable)
+            with patch.dict(os.environ, {'PYTHON': str(link)}):
+                self.assertEqual(runtime_tools.executable('python'), str(link))
+                self.assertNotEqual(runtime_tools.executable('python'), str(Path(sys.executable).resolve()))
 
 
 class WindowsBranchTests(unittest.TestCase):

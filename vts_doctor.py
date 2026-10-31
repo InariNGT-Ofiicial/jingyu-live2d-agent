@@ -116,6 +116,9 @@ def main():
             rows.append((OK, '插件 API 端口', f'127.0.0.1:{port} 可达'))
             state, api = api_state(port)
             needs = state.get('authenticationRequired')
+            if needs is None:
+                # APIStateResponse reports the live session, not a request flag.
+                needs = not state.get('currentSessionAuthenticated', False)
             rows.append((WARN if needs else OK, '插件授权',
                          '已在 VTS 中允许 "Jingyu Motion Bridge"' if not needs else 'VTS 正在等待授权'))
     except ImportError:
@@ -132,7 +135,11 @@ def main():
         try:
             if a.approve:
                 api.authenticate()
-                rows.append((OK, '授权结果', f'已授权，令牌保存方式 {ps.token_backend()}'))
+                # The state read above predates the grant; re-read it.
+                for index, (state_mark, name, _) in enumerate(rows):
+                    if name == '插件授权':
+                        rows[index] = (OK, name, '已授权')
+                rows.append((OK, '授权结果', f'令牌保存方式 {ps.token_backend()}'))
             current = api.call('CurrentModelRequest')
             author = read_json(MODEL_ROOT / '大肥鱼.vtube.json')['ModelID']
             if current.get('modelLoaded') and current.get('modelID') == author:

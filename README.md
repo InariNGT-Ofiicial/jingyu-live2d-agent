@@ -175,7 +175,7 @@ node test_driver_integration.mjs
 VTS Spout 2560×1600 源已实测透明 GIF 与 512×768 / 15 FPS MP4；
 新硬件上的可用帧率仍需由采样报告确认。
 
-macOS 上网页后端、预设与导出已实测；VTS 相关路径只做了路径与进程级验证，未做真机联调，且 Spout2 原生录制仅 Windows 可用（详见 [MACOS.md](MACOS.md)）。
+macOS 上网页后端、预设、导出与 VTS 热部署已实机验证；Spout2 原生录制仅 Windows 可用（详见 [MACOS.md](MACOS.md)）。
 此模型不支持自由行走、背面转身；口型动作不生成音频。
 动作任务和编排历史存于内存，重启清空；个人预设、配置与导出文件保留。
 服务只监听本机，勿将端口直接暴露到公网。
