@@ -65,11 +65,16 @@ def vts_models_dir(root):
     """`.../StreamingAssets/Live2DModels` for a VTS install root or .app bundle."""
     root = Path(root)
     bases = [root]
-    if root.name == 'VTube Studio.app':
+    if root.suffix == '.app':
         bases.insert(0, root / 'Contents' / 'Resources' / 'Data')
-    bases += [root / 'VTube Studio_Data',
-              root / 'Contents' / 'Resources' / 'Data',
-              root / 'VTube Studio.app' / 'Contents' / 'Resources' / 'Data']
+    bases += [root / 'VTube Studio_Data', root / 'Contents' / 'Resources' / 'Data']
+    # macOS bundle names vary in practice ("VTube Studio.app" in the docs,
+    # "VTubeStudio.app" as shipped by Steam), so probe every bundle on disk.
+    try:
+        bundles = sorted(p for p in root.iterdir() if p.suffix == '.app' and p.is_dir())
+    except OSError:
+        bundles = []
+    bases += [bundle / 'Contents' / 'Resources' / 'Data' for bundle in bundles]
     for base in bases:
         candidate = base / 'StreamingAssets' / 'Live2DModels'
         if candidate.is_dir():

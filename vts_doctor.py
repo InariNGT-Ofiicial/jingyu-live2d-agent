@@ -5,7 +5,7 @@ check with a next action, so a first macOS run does not end in a stack trace.
 Nothing here writes to VTS, copies models or triggers playback unless --approve
 is given (that flag only performs the normal plugin authentication prompt).
 """
-import argparse, json, os, socket, sys
+import argparse, json, os, socket, stat, sys
 from pathlib import Path
 from model_profile import MODEL_ROOT, ROOT, read_json
 import platform_support as ps
@@ -40,6 +40,21 @@ def api_state(port, timeout=6):
         raise
 
 
+def write_state(path):
+    """Separate "directory is not writable" from "this process is sandboxed"."""
+    if path is None:
+        return False, '（未找到 Live2DModels）'
+    if os.access(path, os.W_OK):
+        return True, ''
+    try:
+        mode = os.stat(path).st_mode
+    except OSError:
+        return False, '（无法读取目录属性）'
+    if mode & stat.S_IWUSR:
+        return False, '（属主可写，但当前进程被沙箱限制；请在有权限的终端里执行复制）'
+    return False, '（目录属主不可写）'
+
+
 def main():
     p = argparse.ArgumentParser(description='VTS backend readiness check (read-only)')
     p.add_argument('--port', type=int, default=8001)
@@ -70,8 +85,8 @@ def main():
     try:
         root = ps.find_vts()
         models = ps.vts_models_dir(root)
-        writable = models is not None and os.access(models, os.W_OK)
-        rows.append((OK if writable else WARN, 'VTube Studio', f'{root}' + ('' if writable else '（Live2DModels 不可写）')))
+        writable, why = write_state(models)
+        rows.append((OK if writable else WARN, 'VTube Studio', f'{root}' + why))
         rows.append((OK, 'Live2DModels', str(models)))
     except ValueError as error:
         blockers += 1

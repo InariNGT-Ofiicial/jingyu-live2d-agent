@@ -37,6 +37,13 @@ class InstallLayoutTests(unittest.TestCase):
         # L2D_VTS_DIR may point at the install root or straight at the .app.
         self.assertEqual(ps.vts_models_dir(self.root / 'VTube Studio.app'), expected)
 
+    def test_steam_bundle_without_space_resolves(self):
+        # Steam ships "VTubeStudio.app"; the docs say "VTube Studio.app".
+        expected = self.root / 'VTubeStudio.app/Contents/Resources/Data/StreamingAssets/Live2DModels'
+        expected.mkdir(parents=True)
+        self.assertEqual(ps.vts_models_dir(self.root), expected)
+        self.assertEqual(ps.vts_models_dir(self.root / 'VTubeStudio.app'), expected)
+
     def test_missing_install_returns_none(self):
         self.assertIsNone(ps.vts_models_dir(self.root))
 
@@ -62,7 +69,9 @@ class InstallLayoutTests(unittest.TestCase):
             self.assertEqual(ps.vts_models_dir(ps.find_vts()), expected)
 
     def test_find_vts_reports_missing_install(self):
-        with patch.dict(os.environ, {'L2D_VTS_DIR': str(self.root)}):
+        # Hermetic: a real Steam library on this host must not satisfy the check.
+        with patch.dict(os.environ, {'L2D_VTS_DIR': str(self.root)}), \
+                patch.object(ps, 'steam_roots', return_value=[]):
             with self.assertRaises(ValueError) as caught:
                 ps.find_vts()
         self.assertIn('VTube Studio', str(caught.exception))
