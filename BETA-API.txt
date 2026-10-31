@@ -57,6 +57,17 @@ exports/<id>/capture-report.json 是本地逐帧时间报告；capture.log 是�
 agent_tool.py 从 stdin 接收 tool call，把限定操作转发到本地 API。
 bridge_cli.py 支持所有主要接口；--url 可改端口。
 
+旧命令兼容：python bridge_cli.py vts-perform 15 --url http://127.0.0.1:61942
+通过桥接服务将公开 performances/15-flirt-layered.json 提交为 backend:vts，
+复用现有编译、执行互斥和取消恢复；不再依赖未发布的 run_vts_comparison 模块。
+始终等待该任务的 completed/error/interrupted 回执，--wait 可保留但无需填写。
+completed 退出 0，error/interrupted 退出 1；execute --wait 同样遵循此退出规则。
+可用 --request-id 关联指令箱；--output receipt.json 保存最终任务回执，不是逐帧采样轨迹。
+省略 --output 时仅在 stdout 输出最终 JSON，不默认创建旧版日志文件。
+需要已启动且配置好 VTS 的桥接服务；--url 指定服务地址，vts-perform 不接受旧 --port 参数。
+vts-status / vts-stream 仍可用 --port 指定直连 VTS API 端口，默认 8001。
+其他表演使用 execute <计划文件> --backend vts --wait，不会静默替换为表演 15。
+
 OpenAI 协议依据：https://developers.openai.com/api/docs/guides/structured-outputs
 JSON 模式仅保证语法形状，不保证动作语义；compiler.py 始终二次验证真实能力。
 
