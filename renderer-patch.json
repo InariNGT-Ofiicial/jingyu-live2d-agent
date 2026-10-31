@@ -1,6 +1,6 @@
 {
   "sourceSHA256": "af1267e6d52759b245766c578d905bfa025b532d5c3cc727c370957c4409e21b",
-  "patchedSHA256": "a13970be32ca04d7a27ef4f7da09c2ce1deae0f2a0f74da97ab0a2f6c718f2ef",
+  "patchedSHA256": "e8e48f24bdca32e0d246b696cec6a7186c3102921ba88f8ac502956b2716d64f",
   "reference": "https://github.com/Live2D/CubismWebFramework/blob/5-r.1/src/rendering/cubismshader_webgl.ts",
-  "scope": "Dynamic per-drawable multiply/screen colors, including clipped and inverted-mask fragments."
+  "scope": "Dynamic per-drawable multiply/screen colors, including clipped and inverted-mask fragments; plus a 2048x2048 clipping-mask framebuffer in place of the hard-coded 256x256."
 }

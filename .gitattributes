@@ -1,0 +1,7 @@
+# Digest-pinned build inputs and their generated artifacts.
+# Keep them LF in the working tree so a Windows checkout (core.autocrlf=true)
+# reproduces the committed renderer-patch.json byte-for-byte.
+patch_renderer.py                text eol=lf
+renderer-patch.json              text eol=lf
+web/vendor/cubism4.min.js        text eol=lf
+web/vendor/cubism4.colors.min.js text eol=lf
