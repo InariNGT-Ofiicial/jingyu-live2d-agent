@@ -30,6 +30,19 @@ def plugin_api(port, timeout=2.0):
         return True
 
 
+def find_api_port(preferred=None, span=5):
+    """VTS falls back to 8002, 8003... when the port is taken, so probe a range."""
+    candidates = [preferred] if preferred else []
+    candidates += [p for p in range(8001, 8001 + span) if p != preferred]
+    for port in candidates:
+        try:
+            with socket.create_connection(('127.0.0.1', port), timeout=0.6):
+                return port
+        except OSError:
+            continue
+    return None
+
+
 def api_state(port, timeout=6):
     from vts_client import VTS
     client = VTS(port, timeout=timeout)
@@ -93,13 +106,18 @@ def main():
         rows.append((BAD, 'VTube Studio', str(error)))
 
     api = None
+    port = None
     try:
-        plugin_api(a.port)
-        rows.append((OK, '插件 API 端口', f'127.0.0.1:{a.port} 可达'))
-        state, api = api_state(a.port)
-        needs = state.get('authenticationRequired')
-        rows.append((WARN if needs else OK, '插件授权',
-                     '已在 VTS 中允许 "Jingyu Motion Bridge"' if not needs else 'VTS 正在等待授权'))
+        port = find_api_port(a.port)
+        if port is None:
+            blockers += 1
+            rows.append((BAD, '插件 API', '8001–8005 均不可达；在 VTS 设置里打开插件 API'))
+        else:
+            rows.append((OK, '插件 API 端口', f'127.0.0.1:{port} 可达'))
+            state, api = api_state(port)
+            needs = state.get('authenticationRequired')
+            rows.append((WARN if needs else OK, '插件授权',
+                         '已在 VTS 中允许 "Jingyu Motion Bridge"' if not needs else 'VTS 正在等待授权'))
     except ImportError:
         blockers += 1
         rows.append((BAD, '插件 API', '缺少 websocket-client，跳过连接检查'))
