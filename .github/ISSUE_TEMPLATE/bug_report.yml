@@ -1,0 +1,50 @@
+name: 问题反馈
+description: 报告可复现的启动、编排、播放或导出问题
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: 请先搜索已有 Issue。不要上传模型、Core、密钥、令牌、完整本机配置或未脱敏日志。
+  - type: input
+    id: version
+    attributes:
+      label: 版本或 commit SHA
+      placeholder: 例如 1.4.0-beta.2 / a3e0c26
+    validations:
+      required: true
+  - type: dropdown
+    id: route
+    attributes:
+      label: 受影响路径
+      options:
+        - 启动 / 安装
+        - 网页播放
+        - VTS 播放 / 热部署
+        - 网页导出
+        - VTS Spout2 录制 / 导出
+        - OpenAI 兼容服务 / DSH 编排
+        - API / CLI / 个人预设
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境
+      description: Windows、Python、Node、浏览器版本；导出问题加 FFmpeg，VTS 问题加 VTS 版本、GPU 和采集 Python 版本。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 最小复现步骤
+      description: 包括最小动作 JSON、操作顺序和相关选项；请脱敏，勿附模型资产。
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 预期和实际结果
+      description: 若有报错，填写脱敏错误文本、最终任务状态；采集问题可附报告中的尺寸、alpha、重复帧、迟到帧和帧计数是否可用。
+    validations:
+      required: true

@@ -140,6 +140,18 @@ HTTP 入队成功不等于表演完成；以任务 `completed / error / interrup
 
 ## 验证与限制
 
+外部贡献无需取得模型即可运行合成契约测试：
+
+```powershell
+python -m pip install -r requirements-test.txt
+python tools/check_public_tree.py
+python tools/run_checks.py
+```
+
+需要 Python 3.10+ 和 Node.js 24。检查在临时副本中执行，不读取个人状态或连接真实服务。
+这不代替真实模型、VTS / GPU 或视觉验收。贡献要求见 [CONTRIBUTING.md](CONTRIBUTING.md)，
+发布前执行 [回归清单](docs/RELEASE-CHECKLIST.md)。
+
 在取得模型后设置 `L2D_MODEL_DIR` 并执行 `python launch.py --check`，再执行：
 
 ```powershell
