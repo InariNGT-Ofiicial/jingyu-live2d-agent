@@ -28,7 +28,7 @@ START=time.time()
 BACKEND='web'
 BUSY={'queued','compiling','deploying','playing','stopping'}
 VTS_CANCEL={}
-VERSION='1.4.0-beta.2'
+VERSION='1.4.0-beta.3'
 PLANNER=Planner(ROOT/'.local'/'planner-settings.json')
 PLANS=deque(maxlen=30)
 PRESETS=PresetStore(ROOT/'.local'/'presets.json')

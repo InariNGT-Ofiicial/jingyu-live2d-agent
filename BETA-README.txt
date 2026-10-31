@@ -1,4 +1,4 @@
-鲸语 Live2D 动作工作台 1.4.0-beta.2 · Windows 本地测试版
+鲸语 Live2D 动作工作台 1.4.0-beta.3 · Windows 本地测试版
 
 启动
 1. 安装 Python 3.10+，并按 README.md 准备模型与 Live2D Cubism Core。公开仓库不含模型或 Core。

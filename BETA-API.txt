@@ -1,4 +1,4 @@
-鲸语 1.4.0-beta.2 API，默认 http://127.0.0.1:61942
+鲸语 1.4.0-beta.3 API，默认 http://127.0.0.1:61942
 所有写操作：Content-Type: application/json。同源浏览器或本机 CLI。
 
 GET /api/planner/config

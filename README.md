@@ -1,6 +1,8 @@
 # 鲸语 · Jingyu Live2D Agent
 
-**1.4.0-beta.2 · Windows 本地动作工作台**
+**1.4.0-beta.3 · Windows 本地动作工作台**
+
+本次修复旧 VTS CLI 并补齐公开贡献检查，详见 [更新记录](CHANGELOG.md)。
 
 把自然语言编排为可检查的 Live2D 动作时间线，在网页或 VTube Studio 播放。
 可接 OpenAI 兼容 API、已登录的本机 DSH，也可由 Codex / 外部 Agent 通过 HTTP 或 CLI 驱动。
@@ -164,7 +166,7 @@ node test_engine.mjs
 node test_driver_integration.mjs
 ```
 
-本地已通过 48 项 Python 测试（其中 10 项原生采集测试）和 2 组 Node 引擎测试，DSH → 网页 / VTS、导出、
+此前 1.4.0-beta.2 已通过 48 项 Python 测试（其中 10 项原生采集测试）和 2 组 Node 引擎测试，DSH → 网页 / VTS、导出、
 预设持久化与重播已实测。OpenAI 两种协议通过本地 HTTP fixture 验证，
 尚未用真实 OpenAI 账号验证。网页后台可能被浏览器限速。
 VTS Spout 2560×1600 源已实测透明 GIF 与 512×768 / 15 FPS MP4；
