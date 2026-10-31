@@ -37,7 +37,9 @@ def main():
     with tempfile.TemporaryDirectory(prefix='run-', dir=scratch) as folder:
         stage = Path(folder)
         paths = [*ROOT.glob('*.py'), *ROOT.glob('*.mjs'), ROOT / 'core-inventory.json',
-                 ROOT / 'dsh-planner.patch.yml', *ROOT.glob('performances/*.json'),
+                 ROOT / 'dsh-planner.patch.yml', ROOT / 'renderer-patch.json',
+                 ROOT / 'web/vendor/cubism4.min.js', ROOT / 'web/vendor/cubism4.colors.min.js',
+                 *ROOT.glob('performances/*.json'),
                  *ROOT.glob('web/*.mjs'), *ROOT.glob('tools/*.py')]
         for source in paths:
             target = stage / source.relative_to(ROOT)
