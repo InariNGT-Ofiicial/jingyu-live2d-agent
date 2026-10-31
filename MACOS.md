@@ -88,6 +88,23 @@ VTS 自带 NDI 输出 + OBS（NDI 保留 alpha），再把 OBS 录制结果当�
   不依赖键盘热键，但请在 VTS 窗口可见的状态下执行热部署。
 - 透明背景只能靠 NDI 或抠像，见上一节。
 
+## 桌面伙伴（透明悬浮窗）
+
+把角色常驻桌面：无边框、背景透明、默认点击穿透的浮动窗口，加载同一套舞台（`web/desktop.html`）。
+
+```bash
+cd macos-desktop-pet && ./build.sh
+open "build/Jingyu Desktop Pet.app"      # 先让 Bridge 跑起来（python3 launch.py）
+```
+
+菜单栏会出现「鲸」：可切换点击穿透、重新加载、回到默认位置、打开面板、退出。
+默认穿透状态下鼠标点过去落到下面的窗口；关掉穿透后 ⌥+拖动移动、双击角色播放一个内置示例。
+详见 [macos-desktop-pet/README.md](macos-desktop-pet/README.md)。
+
+它在系统层面用到的是 `window.level = .floating`（浮在所有窗口与空间）、`isOpaque = false` 加
+`setValue(false, forKey: "drawsBackground")`（真透明）、`ignoresMouseEvents`（穿透）。
+桌面伙伴只监听事件流负责演出，不注册为渲染器，导出仍由面板窗口负责。
+
 ## 与 Windows 版本的差异清单
 
 | 项目 | 处理 |

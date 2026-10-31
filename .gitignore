@@ -24,6 +24,7 @@ evidence/
 research/
 stress/
 work/
+macos-desktop-pet/build/
 __pycache__/
 *.py[cod]
 *.zip
