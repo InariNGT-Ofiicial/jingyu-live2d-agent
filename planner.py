@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+from platform_support import no_window_flags
 import threading
 import time
 from urllib.parse import urlsplit, urlunsplit
@@ -191,7 +192,7 @@ class Planner:
     def dsh(self, messages):
         if not self.dsh_command: raise PlannerError('本机未安装 DSH CLI')
         task = '\n\n'.join(m['content'] for m in messages)
-        creation = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+        creation = no_window_flags()
         command = [self.dsh_command, '--profile', 'headless', '--patch', str(ROOT/'dsh-planner.patch.yml'), '-']
         try:
             # The installed DSH launcher owns its credentials. No credentials are read or copied here.

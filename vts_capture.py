@@ -1,8 +1,17 @@
-"""Receive native VTS Spout RGBA frames. No window capture or chroma key fallback."""
+"""Receive native VTS Spout RGBA frames. No window capture or chroma key fallback.
+
+Spout2 is a DirectX shared-texture transport, so this receiver only exists on
+Windows. macOS has no equivalent API; the honest alternatives there are NDI or
+OBS capture, which this project does not pretend to implement.
+"""
 import argparse,array,hashlib,json,sys,threading,time
 from pathlib import Path
+from platform_support import IS_WINDOWS, CAPTURE_UNAVAILABLE
 
 def announce(status,**data):print(json.dumps({'status':status,**data},ensure_ascii=True),flush=True)
+
+def require_spout():
+    if not IS_WINDOWS:raise RuntimeError(CAPTURE_UNAVAILABLE)
 
 def choose_sender(names,requested=''):
     if requested:
@@ -27,6 +36,7 @@ def fit_rgba(im,width,height):
 
 class Receiver:
     def __init__(self,name=''):
+        require_spout()
         try:import SpoutGL
         except ImportError as e:raise RuntimeError('原生采集需要 Windows Python 3.12 环境及 requirements-capture.txt；请配置 CAPTURE_PYTHON') from e
         self.sdk=SpoutGL;self.receiver=SpoutGL.SpoutReceiver();self.buffer=None;self.size=None
@@ -53,6 +63,7 @@ class Receiver:
         raise RuntimeError('VTS Spout 无可读帧；请保持 VTS 窗口可见，且 VTS 与采集 Python 使用同一 GPU（见 setup_capture_gpu.py）')
 
 def probe(requested=''):
+    require_spout()
     try:import SpoutGL
     except ImportError as e:raise RuntimeError('原生采集需要 Windows Python 3.12 环境及 requirements-capture.txt；请配置 CAPTURE_PYTHON') from e
     r=SpoutGL.SpoutReceiver()

@@ -3,6 +3,7 @@ import base64,json,math,re,struct,subprocess,threading,time,uuid
 from pathlib import Path
 from model_profile import ROOT
 from runtime_tools import executable
+from platform_support import no_window_flags
 class ExportManager:
     def __init__(self,emit,lock=None):
         # Share the server's reentrant state lock: emit() and command guards also
@@ -37,7 +38,7 @@ class ExportManager:
         frames=math.ceil(compiled['duration']*fps)
         if w*h*frames>900_000_000:raise ValueError('本次导出像素总量过大，请降低尺寸或帧率')
         ffmpeg=executable('ffmpeg')
-        check=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,timeout=10,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+        check=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,timeout=10,creationflags=no_window_flags())
         encoder='gif' if fmt=='gif' else 'libx264'
         if not re.search(r'\s'+encoder+r'\s',check.stdout):raise ValueError(f'当前 FFmpeg 缺少 {encoder} 编码器，请配置完整构建')
         with self.lock:
@@ -56,7 +57,7 @@ class ExportManager:
             options={k:j[k] for k in ['format','width','height','fps','frameCount','sender']}
             jobfile=folder/'job.json';jobfile.write_text(json.dumps({'id':jid,'compiled':j['compiled'],'capture':options},ensure_ascii=False),encoding='utf-8')
             with (self.output/jid/'capture.log').open('w',encoding='utf-8') as log:
-                p=subprocess.Popen([executable('capture_python'),'-u',str(ROOT/'vts_capture.py'),'--job',str(jobfile),'--cancel',str(cancel)],stdout=subprocess.PIPE,stderr=log,text=True,encoding='utf-8',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                p=subprocess.Popen([executable('capture_python'),'-u',str(ROOT/'vts_capture.py'),'--job',str(jobfile),'--cancel',str(cancel)],stdout=subprocess.PIPE,stderr=log,text=True,encoding='utf-8',creationflags=no_window_flags())
                 self.procs[jid]=p
                 def timeout():
                     cancel.touch()
@@ -130,7 +131,7 @@ class ExportManager:
             with (folder/'encode.log').open('w',encoding='utf-8') as log:
                 with self.lock:
                     if j['status']=='cancelled':return
-                    p=subprocess.Popen(cmd,stdout=log,stderr=log,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));self.procs[jid]=p
+                    p=subprocess.Popen(cmd,stdout=log,stderr=log,creationflags=no_window_flags());self.procs[jid]=p
                 code=p.wait(timeout=300)
             with self.lock:
                 if j['status']=='cancelled':return

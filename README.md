@@ -1,8 +1,9 @@
 # 鲸语 · Jingyu Live2D Agent
 
-**1.4.0-beta.3 · Windows 本地动作工作台**
+**1.4.0-beta.3 · 本地动作工作台（Windows / macOS）**
 
-本次修复旧 VTS CLI 并补齐公开贡献检查，详见 [更新记录](CHANGELOG.md)。
+适配 macOS（网页后端、VTS 热部署、桌面悬浮窗），并保留 Windows 原行为；
+另含上游 beta.3 的旧 VTS CLI 修复与公开贡献检查，详见 [更新记录](CHANGELOG.md)。
 
 把自然语言编排为可检查的 Live2D 动作时间线，在网页或 VTube Studio 播放。
 可接 OpenAI 兼容 API、已登录的本机 DSH，也可由 Codex / 外部 Agent 通过 HTTP 或 CLI 驱动。
@@ -14,7 +15,7 @@
 - 网页 / VTS 后端切换；VTS 原生动作编译与热部署，保留作者物理。
 - 头眼、表情、连续头身轨迹、抚胸 / 竖指 / 持草手势及组合预设。
 - 命名保存个人预设、重启保留、确认删除；已执行计划可直接重播，无需再次调用模型。
-- 透明 GIF 和背景合成 MP4 导出；可选择网页渲染或 VTS 原生 Spout2 RGBA 帧流。
+- 透明 GIF 和背景合成 MP4 导出；可选择网页渲染，或在 Windows 上用 VTS 原生 Spout2 RGBA 帧流。
 - HTTP、CLI、Agent 工具协议及逐任务完成回执。
 
 ## 先准备模型与运行库
@@ -40,7 +41,8 @@ python launch.py --model-dir "D:/your-model/DeepSeek" --check
 python launch.py --model-dir "D:/your-model/DeepSeek"
 ```
 
-也可双击 `Start-Beta.cmd`。默认舞台为 <http://127.0.0.1:61942/>。
+macOS 用同样的命令（`python3 launch.py ...`），也可双击 `Start-Beta.command`；
+两平台差异、VTS 路径与令牌存储见 [MACOS.md](MACOS.md)。默认舞台为 <http://127.0.0.1:61942/>。
 `model/DeepSeek/` 存在时会自动加载，已配置的路径记在 `.local/`。
 模型配置生成的 `web/data/model-profile.json` 和压力测试目录在启动时重建，不进入 Git。
 
@@ -157,6 +159,7 @@ python tools/run_checks.py
 发布前执行 [回归清单](docs/RELEASE-CHECKLIST.md)。
 
 在取得模型后设置 `L2D_MODEL_DIR` 并执行 `python launch.py --check`，再执行：
+Windows 与 macOS 均在取得模型后设置 `L2D_MODEL_DIR` 并执行 `python launch.py --check`，再执行：
 
 ```powershell
 python -c "from model_profile import write_profile; write_profile()"
@@ -172,6 +175,7 @@ node test_driver_integration.mjs
 VTS Spout 2560×1600 源已实测透明 GIF 与 512×768 / 15 FPS MP4；
 新硬件上的可用帧率仍需由采样报告确认。
 
+macOS 上网页后端、预设与导出已实测；VTS 相关路径只做了路径与进程级验证，未做真机联调，且 Spout2 原生录制仅 Windows 可用（详见 [MACOS.md](MACOS.md)）。
 此模型不支持自由行走、背面转身；口型动作不生成音频。
 动作任务和编排历史存于内存，重启清空；个人预设、配置与导出文件保留。
 服务只监听本机，勿将端口直接暴露到公网。

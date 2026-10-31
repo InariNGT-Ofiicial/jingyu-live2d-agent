@@ -2,6 +2,7 @@
 import argparse,json,os,subprocess,sys,time,webbrowser
 from pathlib import Path
 from urllib.request import urlopen
+from platform_support import no_window_flags, platform_name, capture_available
 ROOT=Path(__file__).resolve().parent
 def main():
  p=argparse.ArgumentParser();p.add_argument('--model-dir');p.add_argument('--port',type=int,default=61942);p.add_argument('--no-browser',action='store_true');p.add_argument('--check',action='store_true');a=p.parse_args()
@@ -23,7 +24,7 @@ def main():
  for rel in [refs['Moc'],*refs['Textures']]:
   if not (MODEL_ROOT/rel).is_file():raise SystemExit('缺少模型资产：'+rel)
  if a.check:
-  print(json.dumps({'version':'1.4.0-beta.3','python':sys.version.split()[0],'modelReady':True},ensure_ascii=False));return
+  print(json.dumps({'version':'1.4.0-beta.3','python':sys.version.split()[0],'modelReady':True,'platform':platform_name(),'nativeCapture':capture_available()},ensure_ascii=False));return
  saved.parent.mkdir(exist_ok=True);saved.write_text(str(model.resolve()),encoding='utf-8')
  url=f'http://127.0.0.1:{a.port}'
  try:
@@ -34,7 +35,7 @@ def main():
  else:
   logs=ROOT/'logs';logs.mkdir(exist_ok=True)
   with (logs/'server.log').open('a',encoding='utf-8') as stdout,(logs/'server-error.log').open('a',encoding='utf-8') as stderr:
-   process=subprocess.Popen([sys.executable,'-u',str(ROOT/'server.py'),'--port',str(a.port)],cwd=ROOT,stdout=stdout,stderr=stderr,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+   process=subprocess.Popen([sys.executable,'-u',str(ROOT/'server.py'),'--port',str(a.port)],cwd=ROOT,stdout=stdout,stderr=stderr,creationflags=no_window_flags())
   (logs/'server.pid').write_text(str(process.pid))
   for _ in range(60):
    if process.poll() is not None:raise SystemExit('启动失败，请查看 logs/server-error.log')

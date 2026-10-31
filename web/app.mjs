@@ -211,8 +211,20 @@ function mountControls(){
   $('open-research').onclick=()=>$('research-dialog').showModal();$('close-research').onclick=()=>$('research-dialog').close();
   $('research-dialog').onclick=e=>{if(e.target===$('research-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
 }
+// Spout2 is Windows-only, so the native frame stream is offered only where it exists.
+function applyPlatform(state){
+  if(state.nativeCapture===false){
+    const option=$('export-renderer').querySelector('option[value="vts"]');
+    if(option){option.disabled=true;option.textContent='VTS 原生画面 · Spout2（仅 Windows）';}
+    $('export-renderer').value='web';
+    $('export-source-note').textContent=`当前平台（${state.platform||'非 Windows'}）不支持 Spout2 原生采集；网页渲染导出可用。`;
+    $('capture-check').disabled=true;
+    const details=document.querySelector('.export-controls details');if(details)details.hidden=true;
+  }
+}
 try{
   [profile,demos,state]=await Promise.all([api('/data/model-profile.json'),api('/api/demos'),api('/api/state')]);
+  applyPlatform(state);
   bridgeOnline(true);renderInbox(state.inbox);mountControls();connectEvents(state.seq);
   if(state.activeJob&&['queued','playing'].includes(state.activeJob.status))pendingJob=state.activeJob;
   if(state.activeJob){

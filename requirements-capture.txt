@@ -1,4 +1,5 @@
-# SpoutGL currently provides Windows wheels for CPython 3.8–3.13; use Python 3.12.
+# Windows only: SpoutGL ships Windows wheels for CPython 3.8-3.13, so use Python 3.12.
+# macOS has no Spout2 equivalent; use NDI/OBS or the web renderer (see MACOS.md).
 SpoutGL==0.1.1
 Pillow==12.2.0
 websocket-client==1.9.0

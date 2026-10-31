@@ -16,6 +16,7 @@ from compiler import compile_plan, CompileError
 from model_profile import ROOT, MODEL_ROOT, capabilities, write_profile
 from demos import DEMOS
 from runtime_tools import executable
+from platform_support import capture_available, no_window_flags, platform_name
 from media_exports import ExportManager
 from planner import Planner, PlannerError
 from presets import PresetStore
@@ -82,6 +83,7 @@ def state():
         live=[{'id':k,**v} for k,v in CLIENTS.items() if time.time()-v['seen']<8]
         return deepcopy({'bridge':'online','version':VERSION,'seq':SEQ,'uptime':round(time.time()-START), 'clients':live,
                 'rendererReady':any(c.get('ready') for c in live),'backend':BACKEND,'activeJob':ACTIVE,
+                'platform':platform_name(),'nativeCapture':capture_available(),
                 'jobs':list(JOBS),'inbox':list(INBOX)})
 def execute(plan,source='Codex',request_id=None,backend=None):
     global ACTIVE
@@ -113,7 +115,7 @@ def run_vts_job(job):
     if job['status']=='stopping':cancel.touch()
     try:
         with (folder/'worker.log').open('w',encoding='utf-8') as log:
-            p=subprocess.Popen([executable('python'),'-u',str(ROOT/'vts_deploy.py'),str(file),'--cancel',str(cancel)],stdout=subprocess.PIPE,stderr=log,text=True,encoding='utf-8',creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+            p=subprocess.Popen([executable('python'),'-u',str(ROOT/'vts_deploy.py'),str(file),'--cancel',str(cancel)],stdout=subprocess.PIPE,stderr=log,text=True,encoding='utf-8',creationflags=no_window_flags())
             for line in p.stdout:
                 try:event=json.loads(line)
                 except ValueError:continue
@@ -160,7 +162,7 @@ class Handler(BaseHTTPRequestHandler):
         if route=='/api/planner/state':return self.json(planning_state())
         if route=='/api/export/capabilities':
             try:
-                p=subprocess.run([executable('capture_python'),str(ROOT/'vts_capture.py'),'--probe'],capture_output=True,text=True,encoding='utf-8',timeout=12,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                p=subprocess.run([executable('capture_python'),str(ROOT/'vts_capture.py'),'--probe'],capture_output=True,text=True,encoding='utf-8',timeout=12,creationflags=no_window_flags())
                 rows=[json.loads(line) for line in p.stdout.splitlines() if line.startswith('{')]
                 native=rows[-1] if rows else {'available':False,'error':'原生录制依赖未安装，请查看 requirements-capture.txt'}
                 if p.returncode:native['available']=False
