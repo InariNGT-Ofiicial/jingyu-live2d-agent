@@ -322,6 +322,12 @@ class Handler(BaseHTTPRequestHandler):
                         (ROOT/'stress').mkdir(exist_ok=True)
                         (ROOT/'stress'/f'browser-{LAB["id"]}.json').write_text(json.dumps({'run':LAB,'result':result},ensure_ascii=False,allow_nan=False,indent=2),encoding='utf-8')
                 return self.json({'ok':True})
+            if route=='/api/community/import':
+                proc=subprocess.run([executable('node'),str(ROOT/'community_cli.mjs')],input=json.dumps(data),
+                    text=True,encoding='utf-8',capture_output=True,timeout=8,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                if proc.returncode:raise CompileError(proc.stderr.strip()[:500])
+                plan=json.loads(proc.stdout)
+                return self.json({'plan':plan,'compiled':compile_plan(plan)})
             if route=='/api/compile': return self.json(compile_plan(data.get('plan',data)))
             if route=='/api/execute': return self.json(execute(data.get('plan',data),'Codex',data.get('requestId'),data.get('backend')),201)
             if route=='/api/demo':

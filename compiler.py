@@ -85,7 +85,7 @@ def compile_plan(plan):
     for index, action in enumerate(actions):
         if not isinstance(action,dict): raise CompileError('每个动作必须是对象')
         kind=action.get('kind'); at=number(action.get('at',0),'at',0,59)
-        duration=number(action.get('duration',2.5),'duration',.2,20)
+        duration=number(action.get('duration',2.5),'duration',.2,59 if kind=='recorded' else 20)
         strength=number(action.get('strength',.6),'strength',0,1)
         count=action.get('count',1)
         if isinstance(count,bool) or not isinstance(count,int) or not 1<=count<=4: raise CompileError('count 必须为 1..4 的整数')
@@ -197,6 +197,35 @@ def compile_plan(plan):
                 t=k/8
                 if t<duration-.2: points.append((t,(.15+.48*abs(math.sin(k*2.31)))*strength))
             points.append((duration,0)); add('ParamMouthOpenY',at,duration,points,index,label)
+        elif kind=='recorded':
+            label='社区手调录制'
+            frames=action.get('frames')
+            if not isinstance(frames,list) or not 2<=len(frames)<=1200:
+                raise CompileError('录制需要 2..1200 个采样点')
+            aliases={f'ParamAngle{axis}':f'Angle{axis}' for axis in 'XYZ'}
+            allowed=set(PRIMARY) | {f'key{i}' for i in range(1,14)} | {f'Clothes{i}' for i in range(1,6)}
+            allowed.update(pid for joints in GESTURE_JOINTS.values() for pid in joints.values())
+            rows=[]; channels=set(); previous=-1
+            for frame in frames:
+                if not isinstance(frame,dict) or not isinstance(frame.get('v'),dict):
+                    raise CompileError('每帧需要 t 与 v')
+                t=number(frame.get('t'),'采样时间',0,duration)
+                if t<=previous:raise CompileError('采样时间必须递增')
+                previous=t; row={}
+                for key,value in frame['v'].items():
+                    pid=aliases.get(key,key)
+                    if pid not in allowed or pid not in PARAMS or pid in PHYSICS_OUTPUTS or pid in row:
+                        raise CompileError(f'录制通道不支持或冲突：{key}')
+                    row[pid]=number(value,pid,PARAMS[pid]['min'],PARAMS[pid]['max'])
+                rows.append((t,row));channels.update(row)
+            if not channels:raise CompileError('录制没有变化的通道')
+            for pid in sorted(channels):
+                rest=PARAMS[pid]['default']
+                points=[(t,row.get(pid,rest)) for t,row in rows]
+                if points[0][0]>0:points.insert(0,(0,rest))
+                if points[-1][0]<duration:points.append((duration,points[-1][1]))
+                add(pid,at,duration+.2,points+[(duration+.2,rest)],index,label)
+            duration+=.2
         elif kind=='trajectory':
             frames=action.get('frames')
             if not isinstance(frames,list) or not 2<=len(frames)<=60:
