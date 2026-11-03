@@ -5,7 +5,7 @@ async function api(path,data){
  if(!r.ok)throw Error(await r.text());return r.json();
 }
 try {
- const app=new PIXI.Application({view:document.querySelector('canvas'),resizeTo:window,backgroundAlpha:0,antialias:true});
+ const app=new PIXI.Application({view:document.querySelector('canvas'),resizeTo:window,resolution:Math.min(2,devicePixelRatio||1),autoDensity:true,backgroundAlpha:0,antialias:true});
  const [model,profile]=await Promise.all([PIXI.live2d.Live2DModel.from('/model/大肥鱼.model3.json',{autoInteract:false,motionPreload:'NONE'}),api('/data/model-profile.json')]);
  app.stage.addChild(model);model.anchor.set(.5,0);
  function resize(){model.scale.set(Math.min(innerWidth*.95/model.internalModel.originalWidth,innerHeight*.98/model.internalModel.originalHeight));model.position.set(innerWidth/2,innerHeight*.01);}
@@ -16,6 +16,11 @@ try {
  const state=await api('/api/state'),events=new EventSource('/api/events?after='+state.seq);
  events.addEventListener('execute',ev=>{const j=JSON.parse(ev.data);if(j.backend==='web')engine.start(j);});
  events.addEventListener('stop',()=>engine.stop());
- const beat=()=>api('/api/heartbeat',{clientId,ready:true,telemetry:{...engine.telemetry(),presentation:'pet',exportReady:false}}).catch(console.error);
+ let lastBeat=performance.now(), lastFrame=engine.frames;
+ const beat=()=>{
+   const now=performance.now(), fps=Math.round((engine.frames-lastFrame)*1000/Math.max(1,now-lastBeat));
+   lastFrame=engine.frames;lastBeat=now;
+   return api('/api/heartbeat',{clientId,ready:true,telemetry:{...engine.telemetry(),presentation:'pet',exportReady:false,fps,framebuffer:[app.view.width,app.view.height]}}).catch(console.error);
+ };
  await beat();setInterval(beat,2000);
 }catch(e){document.querySelector('#error').textContent=e.message;}

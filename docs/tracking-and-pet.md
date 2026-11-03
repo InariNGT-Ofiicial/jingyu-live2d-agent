@@ -13,4 +13,4 @@
 
 运行集成版工作台后，Windows 执行 Start-Pet.ps1 可打开置顶的网页桌宠。指定 -Port 可更换服务端口。pet.html 也可作为透明浏览器源；在同一服务执行网页动作时，桌宠会回报自己的播放状态。
 
-VTS 原生桌宠使用安装了 requirements-capture.txt 的 Python 运行 spout_pet.py。VTS 开启 Spout 和透明捕获，鼠标左键拖动模型，右键退出。Spout 保留源 alpha；这个 Tk 桌面窗口用二值透明显示，边缘质量与源 RGBA 有差异。
+VTS 原生桌宠使用安装了 requirements-pet.txt 的 Python 运行 spout_pet.py。开启 VTS 的 Spout 和透明捕获，采集 Python 与 VTS 选择同一 GPU。窗口直接显示 GPU 纹理，保留逐像素透明度。默认宽度 960 像素，目标 60 FPS；滚轮缩放，左键拖动，右键退出。可传 --width 和 --fps 调整。网页桌宠按屏幕像素密度（最高 2 倍）渲染。最小化时浏览器可暂停绘制，再次运行 Start-Pet.ps1 可恢复窗口。

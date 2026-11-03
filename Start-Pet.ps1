@@ -8,10 +8,10 @@ $existing=Get-CimInstance Win32_Process -Filter "Name='msedge.exe'" | Where-Obje
     $_.CommandLine -like "*$profile*" -and $_.CommandLine -like "*$base/pet.html*" -and $_.CommandLine -notmatch '--type='
 } | Where-Object {(Get-Process -Id $_.ProcessId -ErrorAction SilentlyContinue).MainWindowTitle -eq '鲸语桌宠'}
 if (-not $existing) {
-    Start-Process -FilePath $edge -ArgumentList @("--app=$base/pet.html","--user-data-dir=`"$profile`"",'--no-first-run','--window-size=360,520')
+    Start-Process -FilePath $edge -ArgumentList @("--app=$base/pet.html","--user-data-dir=`"$profile`"",'--no-first-run','--window-size=480,680','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows')
 }
 if (-not ('JingyuPetWindow' -as [type])) {
-    Add-Type 'using System; using System.Runtime.InteropServices; public class JingyuPetWindow { [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int cx, int cy, uint flags); }'
+    Add-Type 'using System; using System.Runtime.InteropServices; public class JingyuPetWindow { [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr hwnd); [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hwnd, int cmd); [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int cx, int cy, uint flags); }'
 }
 for ($attempt=0; $attempt -lt 20; $attempt++) {
     $owner=Get-CimInstance Win32_Process -Filter "Name='msedge.exe'" | Where-Object {
@@ -20,6 +20,7 @@ for ($attempt=0; $attempt -lt 20; $attempt++) {
     if ($owner) {
         $window=Get-Process -Id $owner.ProcessId -ErrorAction SilentlyContinue
         if ($window.MainWindowHandle -and $window.MainWindowTitle -eq '鲸语桌宠') {
+            if ([JingyuPetWindow]::IsIconic($window.MainWindowHandle)) { [void][JingyuPetWindow]::ShowWindowAsync($window.MainWindowHandle,9) }
             if ([JingyuPetWindow]::SetWindowPos($window.MainWindowHandle,[IntPtr](-1),0,0,0,0,19)) {return}
         }
     }
