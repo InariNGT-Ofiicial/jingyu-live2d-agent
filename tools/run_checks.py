@@ -38,9 +38,10 @@ def main():
         stage = Path(folder)
         paths = [*ROOT.glob('*.py'), *ROOT.glob('*.mjs'), ROOT / 'core-inventory.json',
                  ROOT / 'dsh-planner.patch.yml', ROOT / 'renderer-patch.json',
+                 ROOT / 'web/data/speech-styles.json',
                  ROOT / 'web/vendor/cubism4.min.js', ROOT / 'web/vendor/cubism4.colors.min.js',
                  *ROOT.glob('performances/*.json'),
-                 *ROOT.glob('web/*.mjs'), *ROOT.glob('tools/*.py')]
+                 *ROOT.glob('web/*.mjs'), *ROOT.glob('web/community-vendor/*.mjs'), *ROOT.glob('tools/*.py')]
         for source in paths:
             target = stage / source.relative_to(ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)

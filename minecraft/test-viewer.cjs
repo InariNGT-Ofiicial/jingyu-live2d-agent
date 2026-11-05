@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+require('./patch-viewer.cjs')();
+const root=path.dirname(require.resolve('prismarine-viewer/package.json'));
+const {World}=require(path.join(root,'viewer/lib/world'));
+const {getSectionGeometry}=require(path.join(root,'viewer/lib/models'));
+const {Vec3}=require('vec3'),Chunk=require('prismarine-chunk')('1.20.1'),data=require('minecraft-data')('1.20.1');
+const world=new World('1.20.1'),chunk=new Chunk();
+chunk.setBlockStateId(new Vec3(1,-60,1),data.blocksByName.oak_log.minStateId);
+world.addColumn(0,0,chunk.toJson());
+const states=JSON.parse(fs.readFileSync(path.join(root,'public/blocksStates/1.20.1.json')));
+const geometry=getSectionGeometry(0,-64,0,world,states);
+assert(geometry.positions.length>=72,'negative-height block must emit its six faces');
+console.log('Viewer negative Y geometry passed:',geometry.positions.length,'position components');

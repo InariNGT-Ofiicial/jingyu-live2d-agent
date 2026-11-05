@@ -2,7 +2,7 @@
   "version": 1,
   "title": "顽皮逗趣 → 被发现 → 乖巧道歉",
   "intent": "顽皮逗趣 → 被发现 → 乖巧道歉",
-  "summary": "持草时转腕并换重心，得意的表情被打断后收手，低头抚胸再微笑。",
+  "summary": "持草时转腕并换重心，被发现后收起狗尾草，垂手低头再微笑。",
   "view": "full",
   "group": "fullbody-emotion",
   "icon": "❧",
@@ -119,30 +119,6 @@
         "BrowInnerUp": 0.45,
         "ParamMouthForm": -0.2
       }
-    },
-    {
-      "kind": "gesture",
-      "at": 17,
-      "duration": 9,
-      "name": "hand_on_chest",
-      "accents": [
-        {
-          "at": 2,
-          "duration": 2.2,
-          "values": {
-            "forearm": 0.6,
-            "wrist": -0.2
-          }
-        },
-        {
-          "at": 4.8,
-          "duration": 2,
-          "values": {
-            "upperArm": -0.15,
-            "wrist": 0.2
-          }
-        }
-      ]
     },
     {
       "kind": "pose",

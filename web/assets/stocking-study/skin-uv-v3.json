@@ -1,0 +1,20 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Create a flat rectangular diffuse UV color texture for an adult anime character's bare leg, using the provided original leg texture crop ONLY as palette/shading reference. THIS IS NOT A DRAWING OF A LEG. Fill the ENTIRE canvas edge to edge with opaque pale warm pink skin color and subtle soft anime skin shading. Tall rectangular aspect ratio 1:4. NO silhouette, NO outline, NO background, NO margins, NO stocking, NO seam, NO body, NO toes or anatomy outlines. This rectangular color map will be clipped to the exact original game mesh, so no anatomy silhouette should appear in the image. Center broad warm ivory highlight, soft rose shaded edges; subtle soft rounded knee shading centered at 51% of image height, subtle calf shading at 65%, ankle gentle shade at 86%, all seamless across the full width. The TOP 30% should match the reference original upper thigh's pale peach pink palette and soft lighting. The rest continues that same bare skin material with no horizontal garment boundary. Uniformly opaque rectangular texture only. Technical game material painting, no text.",
+  "asset": "skin-uv-v3.png",
+  "mapping": {
+    "sourceTexture": "texture_01.png",
+    "sourceSize": [
+      4096,
+      8192
+    ],
+    "patchPixels": [
+      2385,
+      1690,
+      345,
+      2220
+    ],
+    "geometry": "original mesh and alpha; RGB overlay only"
+  },
+  "status": "first material painting; not a replacement leg silhouette"
+}

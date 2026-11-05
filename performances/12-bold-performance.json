@@ -5,39 +5,6 @@
   "caption": "大幅联动 · 连续表演 · 38 秒",
   "actions": [
     {
-      "kind": "gesture",
-      "name": "point",
-      "at": 0,
-      "duration": 12,
-      "accents": [
-        {
-          "at": 2,
-          "duration": 2,
-          "values": {
-            "upperArm": -0.55,
-            "perspective": 0.65,
-            "forearm": 0.45
-          }
-        },
-        {
-          "at": 5,
-          "duration": 2,
-          "values": {
-            "wrist": 0.7,
-            "finger": 0.9
-          }
-        },
-        {
-          "at": 8,
-          "duration": 2,
-          "values": {
-            "wrist": -0.6,
-            "forearm": 0.7
-          }
-        }
-      ]
-    },
-    {
       "kind": "trajectory",
       "at": 0.2,
       "duration": 12,

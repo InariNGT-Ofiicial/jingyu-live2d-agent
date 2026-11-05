@@ -28,3 +28,20 @@ That notice prohibits unauthorized redistribution of the complete model files.
 Model credits:
 Illustration and separation: 神宫凉子. Live2D modeling: 霓虹猫_NeonNeko.
 Obtaining this bridge does not grant a license to distribute the character assets.
+
+Electron 45.2.2 (optional transparent web pet runtime)
+Source: https://github.com/electron/electron
+License: MIT; Chromium and bundled third-party notices remain in the installed Electron distribution.
+Installed separately using desktop-pet/package.json; no VTS or Spout dependency for the default web pet.
+
+Local integrated package (not the public Git repository)
+Includes the user's installed CPython runtimes, Node/npm, FFmpeg/ffprobe, Electron,
+Python wheels and optionally CosyVoice code/weights and Minecraft test dependencies.
+Original Python, Electron/Chromium, wheel dist-info and JRE notices remain with those files.
+Node license: licenses/Node-LICENSE.txt (https://github.com/nodejs/node/blob/main/LICENSE).
+FFmpeg GPLv3: licenses/FFmpeg-COPYING.GPLv3.txt; installed build source: https://www.gyan.dev/ffmpeg/builds/.
+CosyVoice: https://github.com/FunAudioLLM/CosyVoice, original LICENSE included under voice/CosyVoice_源码/.
+CosyVoice2 weights: https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B.
+The configured synthetic reference voice keeps its local-only rights metadata and is not uploaded to GitHub.
+Minecraft test server and Java retain their upstream terms; no saved user world is copied.
+VTube Studio, OBS Studio and DSH are separate optional applications, not repackaged here.

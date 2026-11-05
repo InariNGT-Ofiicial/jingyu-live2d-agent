@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {MotionEngine} from './web/engine.mjs';
+const profile=JSON.parse(fs.readFileSync('web/data/model-profile.json')),values=new Map();
+const core={setParameterValueById:(id,v)=>values.set(id,v),getParameterValueById:id=>values.get(id)||0};
+const e=new MotionEngine(core,profile,()=>{});e.idle=false;
+e.speechPose={values:{ParamEyeBallX:0,AngleX:5}};e.attention={x:-.8,y:.4,until:3};
+for(let i=0;i<60;i++)e.tick(16.667);
+assert(values.get('ParamEyeBallX')<-.5);assert(values.get('ParamEyeBallY')>.2);
+assert(values.get('AngleX')<0,'attention overrides a speaking look');
+e.start({id:'explicit',compiled:{duration:1,steps:[{kind:'pose'}],tracks:[{id:'AngleX',action:0,start:0,duration:1,points:[[0,20],[1,20]]}]}});
+e.tick(500);assert(values.get('AngleX')>19,'explicit performance remains highest priority');
+e.stop();e.speechPose=null;
+for(let i=0;i<360;i++)e.tick(16.667);
+assert(Math.abs(values.get('ParamEyeBallX'))<.01,'expired attention releases gaze');
+console.log('Game gaze: direction, speech layering, explicit action priority and expiry passed');

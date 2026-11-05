@@ -5,6 +5,32 @@ from model_profile import PARAMS, GESTURES
 from demos import DEMOS
 
 class CompilerTests(unittest.TestCase):
+    def test_paired_gesture_owns_both_arm_channels_and_restores(self):
+        plan={'version':1,'actions':[{'kind':'gesture','name':'hand_on_chest','pair':'point','duration':6}]}
+        compiled=compile_plan(plan)
+        ids=[t['id'] for t in compiled['tracks']]
+        self.assertEqual(len(ids),len(set(ids)))
+        for pid in ['Param62','Param60','Param36','Param41']:
+            self.assertIn(pid,ids)
+            track=next(t for t in compiled['tracks'] if t['id']==pid)
+            self.assertEqual(track['points'][-1][1],PARAMS[pid]['default'])
+        plan['actions'][0]['name']='grass'
+        with self.assertRaises(CompileError):compile_plan(plan)
+    def test_expression_spans_successive_body_segments(self):
+        from arm_binding import sample
+        actions=[{'kind':'look','direction':'left','at':0,'duration':12},
+                 {'kind':'look','direction':'right','at':12,'duration':13},
+                 {'kind':'expression','name':'脸红','duration':25,'strength':.85}]
+        result=compile_plan({'version':1,'actions':actions})
+        expressions=[t for t in result['tracks'] if t.get('expression')]
+        self.assertTrue(expressions)
+        for track in expressions:
+            for t in (1,11.99,12,12.01,24):
+                self.assertAlmostEqual(sample(track['expression']['weightPoints'],t),.85)
+            self.assertEqual(sample(track['expression']['weightPoints'],25),0)
+        actions[-1]['at']=40
+        with self.assertRaises(CompileError):compile_plan({'version':1,'actions':actions})
+
     def test_continuous_trajectory_and_face_inputs(self):
         frames=[{'time':1,'values':{'AngleX':28,'MouthX':-.8}}, {'time':3,'values':{'AngleX':-28,'MouthX':.8}}]
         r=compile_plan({'version':1,'actions':[{'kind':'trajectory','duration':4,'frames':frames}]})
@@ -59,6 +85,7 @@ class CompilerTests(unittest.TestCase):
             action={'kind':'gesture','name':name,'duration':10}
             original=compile_plan({'version':1,'actions':[action]})
             action['accents']=[{'at':2,'duration':3,'values':{'wrist':.5}}]
+            action['armBinding']='off'  # Raw mode preserves exact authored/manual values.
             edited=compile_plan({'version':1,'actions':[action]})
             for old,new in zip(original['tracks'],edited['tracks']):
                 self.assertEqual([p for p in old['points'] if p[0]<2 or p[0]>5],

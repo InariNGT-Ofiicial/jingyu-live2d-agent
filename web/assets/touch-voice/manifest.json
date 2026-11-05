@@ -1,0 +1,148 @@
+{
+  "voice": "DS娘晓伊 A3",
+  "clips": {
+    "normal-0": {
+      "id": "normal-0",
+      "text": "嗯？是在叫我吗？",
+      "emotion": "好奇",
+      "instruction": "用自然、好奇的语气轻声询问，语速适中。",
+      "file": "normal-0.wav",
+      "duration": 2.2,
+      "takeId": "142f93810f7c",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "636f01c84311a89dec4b1eabbe3d7951a7a8416cc5277157fdf4fdbdf8e3c3f3"
+    },
+    "normal-1": {
+      "id": "normal-1",
+      "text": "看到你啦，有什么想聊的？",
+      "emotion": "开心",
+      "instruction": "用轻快、开心的语气和朋友打招呼，声音自然。",
+      "file": "normal-1.wav",
+      "duration": 2.44,
+      "takeId": "f8210b8a1c13",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "f7092b95cffb5bd326cee746150199cc1d9b3f9f704381ebd61cbf72efba17e4"
+    },
+    "normal-2": {
+      "id": "normal-2",
+      "text": "你好呀，今天过得怎么样？",
+      "emotion": "热情",
+      "instruction": "用开朗、友好的语气打招呼，语速适中。",
+      "file": "normal-2.wav",
+      "duration": 2.68,
+      "takeId": "c9791f28ddcc",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "a896479020356a9dd763152ff00defb8b04b649040d72d8ec31e675a280e0b8d"
+    },
+    "normal-3": {
+      "id": "normal-3",
+      "text": "我在听，你慢慢说。",
+      "emotion": "温柔",
+      "instruction": "用温柔、耐心的语气回应朋友，自然停顿。",
+      "file": "normal-3.wav",
+      "duration": 1.88,
+      "takeId": "f8564649082f",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "658fd63ea09ceecf22fc7a656af403256ec40af23b753155c277a2f001e7acc4"
+    },
+    "normal-repeat": {
+      "id": "normal-repeat",
+      "text": "我在呢，有什么想说的？",
+      "emotion": "耐心",
+      "instruction": "用温柔、耐心又略带好奇的语气说话。",
+      "file": "normal-repeat.wav",
+      "duration": 2.28,
+      "takeId": "24f2e2644a4c",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "de2b4a6d7075b5136b9c755b80d1698c6a931013330a60573fe671deeece477d"
+    },
+    "special-0": {
+      "id": "special-0",
+      "text": "哎呀，你又在逗我啦。",
+      "emotion": "笑着惊讶",
+      "instruction": "用轻微惊讶后带笑意的日常语气说话，正常音量，句间自然换气。",
+      "file": "special-0.wav",
+      "duration": 1.64,
+      "takeId": "9533273299ce",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "cc4da0da699c85f55c128e0d6cad65fd860abe14898cc98e347731b3396b0991"
+    },
+    "special-1": {
+      "id": "special-1",
+      "text": "好啦，看到你了，别偷笑呀。",
+      "emotion": "俏皮",
+      "instruction": "用亲近、俏皮、略带笑意的日常语气说话，发音清楚，自然停顿。",
+      "file": "special-1.wav",
+      "duration": 2.32,
+      "takeId": "23e89c8a868b",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "7f65a6b9f403dd8733d6d4c2786f48999cb42f244066e2f1f692d2feae40f58a"
+    },
+    "special-2": {
+      "id": "special-2",
+      "text": "你笑什么呀，我也想听。",
+      "emotion": "好奇",
+      "instruction": "用带笑意的好奇语气说话，轻松明亮，正常音量。",
+      "file": "special-2.wav",
+      "duration": 2.16,
+      "takeId": "f5330e29859c",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "2efb67921794d58a5078dc8b675b7af5bb1fb81660de46fab7d1b9e0f6c10987"
+    },
+    "special-3": {
+      "id": "special-3",
+      "text": "刚才有点走神，现在看着你啦。",
+      "emotion": "温柔",
+      "instruction": "用温柔亲近的聊天语气说话，轻微笑意，自然换气。",
+      "file": "special-3.wav",
+      "duration": 2.44,
+      "takeId": "15b08cb62691",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "0551af9d8e47595d4f6eb866c00950cb4e65e0d736513e8c372cd827d586ecd0"
+    },
+    "special-repeat": {
+      "id": "special-repeat",
+      "text": "又被你逗笑啦。",
+      "emotion": "含笑",
+      "instruction": "用轻快、带笑意的日常语气说话，语速适中，发音清楚。",
+      "file": "special-repeat.wav",
+      "duration": 1.08,
+      "takeId": "dde23b907c57",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "bafa41551f36cd82d0dd78c0bb8e35b673b5f761e14fa2714ec41331414ae9b0"
+    },
+    "hold-0": {
+      "id": "hold-0",
+      "text": "你又在逗我啦，我都看到啦。",
+      "emotion": "俏皮害羞",
+      "instruction": "用亲近、带笑意、略微害羞的日常语气说话，正常音量，自然换气。",
+      "file": "hold-0.wav",
+      "duration": 2.32,
+      "takeId": "5abe39a369ba",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "828ff53e288c4cda9d3986dee32e2ac0d9d2c772e2eb4fc92c6a8ef8c73c6ce9"
+    },
+    "hold-1": {
+      "id": "hold-1",
+      "text": "好啦，好啦，我在听呢。",
+      "emotion": "温柔含笑",
+      "instruction": "用温柔、带笑意的聊天语气说话，发音清楚，自然停顿。",
+      "file": "hold-1.wav",
+      "duration": 2.2,
+      "takeId": "3be956406715",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "38ea32e50872c51a0604bcce2cacd1f06db629ea2aa72508ebb09e0734c8e1ac"
+    },
+    "hold-2": {
+      "id": "hold-2",
+      "text": "怎么你一笑，我也跟着笑了。",
+      "emotion": "轻快",
+      "instruction": "用轻快亲近、忍不住微笑的日常语气说话，正常音量，自然换气。",
+      "file": "hold-2.wav",
+      "duration": 2.76,
+      "takeId": "9afe26a829e3",
+      "referenceSha256": "494a1bc92df200ef4e64373f5d291c5d538cdc520f232a127474a150962bf08c",
+      "audioSha256": "474d6e6889365b9ce773ce1889656655313a8d6f97c735f814b666bc440c6a74"
+    }
+  }
+}

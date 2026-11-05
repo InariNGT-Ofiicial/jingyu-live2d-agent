@@ -13,5 +13,15 @@
     "file": "pixi.js-LICENSE.txt",
     "source": "https://raw.githubusercontent.com/pixijs/pixijs/v6.5.10/LICENSE",
     "sha256": "536a16e090f0b6c1454a7c0b47ee8414a39a2f1724a154f10ca1edc750a2dcfd"
+  },
+  {
+    "file": "Node-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/nodejs/node/refs/heads/main/LICENSE",
+    "sha256": "3ebb7123f4d2b9b916338e11748380972d4339d66f54cb3258270f99bb62faf5"
+  },
+  {
+    "file": "FFmpeg-COPYING.GPLv3.txt",
+    "source": "https://raw.githubusercontent.com/FFmpeg/FFmpeg/master/COPYING.GPLv3",
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
   }
 ]

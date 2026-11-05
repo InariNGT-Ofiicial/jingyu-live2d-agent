@@ -1,0 +1,83 @@
+{
+  "voice": "DS娘晓伊 A3",
+  "clips": [
+    {
+      "id": "normal-0",
+      "text": "嗯？是在叫我吗？",
+      "emotion": "好奇",
+      "instruction": "用自然、好奇的语气轻声询问，语速适中。"
+    },
+    {
+      "id": "normal-1",
+      "text": "看到你啦，有什么想聊的？",
+      "emotion": "开心",
+      "instruction": "用轻快、开心的语气和朋友打招呼，声音自然。"
+    },
+    {
+      "id": "normal-2",
+      "text": "你好呀，今天过得怎么样？",
+      "emotion": "热情",
+      "instruction": "用开朗、友好的语气打招呼，语速适中。"
+    },
+    {
+      "id": "normal-3",
+      "text": "我在听，你慢慢说。",
+      "emotion": "温柔",
+      "instruction": "用温柔、耐心的语气回应朋友，自然停顿。"
+    },
+    {
+      "id": "normal-repeat",
+      "text": "我在呢，有什么想说的？",
+      "emotion": "耐心",
+      "instruction": "用温柔、耐心又略带好奇的语气说话。"
+    },
+    {
+      "id": "special-0",
+      "text": "哎呀，你又在逗我啦。",
+      "emotion": "笑着惊讶",
+      "instruction": "用轻微惊讶后带笑意的日常语气说话，正常音量，句间自然换气。"
+    },
+    {
+      "id": "special-1",
+      "text": "好啦，看到你了，别偷笑呀。",
+      "emotion": "俏皮",
+      "instruction": "用亲近、俏皮、略带笑意的日常语气说话，发音清楚，自然停顿。"
+    },
+    {
+      "id": "special-2",
+      "text": "你笑什么呀，我也想听。",
+      "emotion": "好奇",
+      "instruction": "用带笑意的好奇语气说话，轻松明亮，正常音量。"
+    },
+    {
+      "id": "special-3",
+      "text": "刚才有点走神，现在看着你啦。",
+      "emotion": "温柔",
+      "instruction": "用温柔亲近的聊天语气说话，轻微笑意，自然换气。"
+    },
+    {
+      "id": "special-repeat",
+      "text": "又被你逗笑啦。",
+      "emotion": "含笑",
+      "instruction": "用轻快、带笑意的日常语气说话，语速适中，发音清楚。"
+    },
+    {
+      "id": "hold-0",
+      "text": "你又在逗我啦，我都看到啦。",
+      "emotion": "俏皮害羞",
+      "instruction": "用亲近、带笑意、略微害羞的日常语气说话，正常音量，自然换气。"
+    },
+    {
+      "id": "hold-1",
+      "text": "好啦，好啦，我在听呢。",
+      "emotion": "温柔含笑",
+      "instruction": "用温柔、带笑意的聊天语气说话，发音清楚，自然停顿。"
+    },
+    {
+      "id": "hold-2",
+      "text": "怎么你一笑，我也跟着笑了。",
+      "emotion": "轻快",
+      "instruction": "用轻快亲近、忍不住微笑的日常语气说话，正常音量，自然换气。"
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+import {installStockingShader,bindOriginalStockings} from './original-stockings.mjs';
+import {bindTouchFeedback} from './touch-feedback.mjs';
+import {attachChestPhysics} from './idle-events.mjs';
+import {bindNaturalMotion} from './natural-motion.mjs';
 import {MotionEngine} from './engine.mjs';
 import {StressRunner} from './stress.mjs';
 import {FrameExporter} from './exporter.mjs';
@@ -21,7 +25,7 @@ function showExport(job,message){
 function applyBackend(value){
   backend=value;$('backend-select').value=value;
   $('backend-note').textContent=value==='vts'?'动作在 VTube Studio 窗口播放；此处保留网页待机预览。':'动作在当前网页舞台播放。';
-  for(const id of ['idle-toggle','physics-toggle','gaze-toggle','strength'])$(id).disabled=value==='vts';
+  for(const id of ['idle-toggle','physics-toggle','gaze-toggle','strength','sway-toggle','sway-strength','sway-period','random-idle-toggle','chest-gain'])$(id).disabled=value==='vts';
   if(value==='vts')$('pause').disabled=true;
 }
 function backendJob(job){
@@ -138,6 +142,7 @@ async function loadModel(){
   if(!window.PIXI?.live2d?.Live2DModel||!window.Live2DCubismCore)throw new Error('本地 Live2D 运行库未能加载，请刷新页面。');
   pixi=new PIXI.Application({view:canvas,width:Math.max(1,$('scene').clientWidth),height:Math.max(1,$('scene').clientHeight),backgroundAlpha:0,antialias:true,autoDensity:true,resolution:Math.min(devicePixelRatio||1,1.5),powerPreference:'high-performance'});
   PIXI.live2d.Live2DModel.registerTicker(PIXI.Ticker);
+  const setStockingShader=installStockingShader(pixi.renderer.gl);
   model=await PIXI.live2d.Live2DModel.from('/model/大肥鱼.model3.json',{autoInteract:false,autoUpdate:true,motionPreload:'NONE'});
   pixi.stage.addChild(model);physics=model.internalModel.physics;
   const core=model.internalModel.coreModel;
@@ -151,6 +156,10 @@ async function loadModel(){
       document.querySelectorAll('.score-step').forEach(e=>{e.classList.remove('active');e.classList.add('done');});
     }
   });
+  bindNaturalMotion(engine,$('scene'),{disabled:comparisonActive});
+  bindOriginalStockings({model,stage:$('scene'),canvas,renderer:pixi.renderer,setShaderProgress:setStockingShader,busy:()=>comparisonActive||backend!=='web'||!!engine.job||!!pendingJob});
+  attachChestPhysics(model.internalModel,profile,()=>engine.chestGain,()=>engine.job?null:engine.touchInput);
+  bindTouchFeedback({stage:$('scene'),canvas:$('model-canvas'),renderer:pixi.renderer,model,engine,busy:()=>comparisonActive||backend!=='web'||!!engine.job||!!pendingJob,play:plan=>api('/api/execute',{plan,backend:'web'})});
   // This hook is called after motion/blink, before author physics and model.update().
   model.internalModel.eyeBlink=undefined;model.internalModel.breath=undefined;model.internalModel.updateFocus=()=>{};
   // Pixi caps ticker delta; a background tab must still follow wall-clock plans.
@@ -206,8 +215,6 @@ function mountControls(){
   $('idle-toggle').onchange=e=>{if(engine)engine.idle=e.target.checked;};
   $('physics-toggle').onchange=e=>{if(model)model.internalModel.physics=e.target.checked?physics:undefined;};
   $('strength').oninput=e=>{const v=Number(e.target.value);$('strength-value').textContent=`${Math.round(v*100)}%`;if(engine)engine.amplitude=v;};
-  $('scene').onpointermove=e=>{if(!$('gaze-toggle').checked||!engine)return;const r=$('scene').getBoundingClientRect();engine.gaze={x:((e.clientX-r.left)/r.width-.5)*2,y:(.5-(e.clientY-r.top)/r.height)*2};};
-  $('scene').onpointerleave=()=>{if(engine)engine.gaze=null;};$('gaze-toggle').onchange=e=>{if(!e.target.checked&&engine)engine.gaze=null;};
   $('open-research').onclick=()=>$('research-dialog').showModal();$('close-research').onclick=()=>$('research-dialog').close();
   $('research-dialog').onclick=e=>{if(e.target===$('research-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
 }

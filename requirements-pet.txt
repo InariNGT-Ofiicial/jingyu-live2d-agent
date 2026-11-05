@@ -1,2 +1,3 @@
 -r requirements-capture.txt
 glfw==2.10.0
+pywin32==312

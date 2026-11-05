@@ -1,0 +1,34 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "MASKED TEXTURE REPAINT. Image 1 is the edit target, 768x2048 canvas. Image 2 is a painting mask: white permits repainting, black must remain unchanged. Repaint the WHITE STOCKING on the CENTRAL adult anime game leg as bare skin matching the ORIGINAL upper thigh's pale peach tone, natural local knee/calf/ankle/toe highlights and shadows. Remove the stocking seam and cloth gloss. Crucially copy the original leg's contour, size, position and anatomical landmarks exactly. Preserve the original top thigh and gray background completely, and preserve all original dark toe outlines. No recentering, no new pose, no changed silhouette, no cropped canvas, no background removal, no stronger pink saturation, no flat gradient panel. Exact same full framing as Image 1; render the final edited target image only, not the mask, not a split comparison. This is a neutral character clothing texture asset, no torso or pelvis. If in doubt preserve original detail and only repaint fabric coloration into skin.",
+  "asset": "skin-masked-v4.png",
+  "reference": "outputs/studio-v2/leg-masked-reference.png",
+  "mask": "outputs/studio-v2/leg-repaint-mask.png",
+  "canvas": [
+    768,
+    2048
+  ],
+  "patchCanvasRect": [
+    237,
+    80,
+    293,
+    1887
+  ],
+  "sourceTextureSize": [
+    4096,
+    8192
+  ],
+  "sourceRect": [
+    2385,
+    1690,
+    345,
+    2220
+  ],
+  "validation": {
+    "silhouetteThresholdIoU": 0.9824,
+    "originalMeshPreserved": true,
+    "realBrowserBothLegs": true,
+    "fullRemovalAndRestore": true
+  },
+  "note": "Mask supplied as a reference image; generated pixels are sampled inside the original mesh alpha."
+}

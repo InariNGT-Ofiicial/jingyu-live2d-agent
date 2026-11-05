@@ -19,3 +19,14 @@ assert.equal(samplePoints([[0,0],[1,1]],.5),.5);
 assert.equal(sampleMotion([0,0,0,1,10],.5),5);
 assert(Math.abs(sampleMotion([0,0,1,.1,0,.9,10,1,10],.5)-5)<.001);
 console.log('Engine: pause, completion, stop recovery, easing and Bezier sampling passed.');
+
+engine.touchInput={zone:'chest',x:1,y:.5};
+engine.tick(16.667);assert(values.get('PositionX')>0&&values.get('PositionX')<10);
+for(let i=0;i<90;i++)engine.tick(16.667);
+assert(values.get('PositionX')>19&&values.get('AngleX')>9);
+assert(values.get('LeanInput')<-4.5);
+engine.touchInput=null;for(let i=0;i<240;i++)engine.tick(16.667);
+assert(Math.abs(values.get('PositionX'))<.001);
+engine.touchInput={zone:'chest',x:-1,y:1};engine.start(job);engine.tick(16.667);
+assert.equal(engine.touchInput,null);assert.equal(engine.touchBody.x,0);
+console.log('Chest drag: delayed torso follow, release recovery and job priority passed.');

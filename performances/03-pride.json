@@ -5,12 +5,6 @@
   "summary": "复杂表演测试：多通道组合，保留作者物理，完成后回到自然待机。",
   "actions": [
     {
-      "kind": "gesture",
-      "at": 0,
-      "duration": 7.5,
-      "name": "point"
-    },
-    {
       "kind": "expression",
       "at": 0.5,
       "duration": 6,

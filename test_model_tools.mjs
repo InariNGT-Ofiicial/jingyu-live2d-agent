@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {checkValue,normalizedValue,bindFrame,parameterDiff} from './web/model-tools.mjs';
+import {decodeGif,analyzeTiming} from './web/community-vendor/gif-analysis.mjs';
+import {GifWriter} from './web/community-vendor/omggif.mjs';
+const p={id:'asymmetric',min:-1,max:3,default:0};
+assert.throws(()=>checkValue({},999));assert.throws(()=>checkValue({...p,min:NaN},0));assert.throws(()=>checkValue(p,Infinity));
+assert.throws(()=>checkValue(p,4));assert.throws(()=>checkValue(p,0,[-2,2]));
+assert.equal(checkValue(p,2,[-.5,1]).value,2);assert.equal(checkValue(p,2,[-.5,1],true).value,1);
+assert.equal(normalizedValue(p,0),0);assert.equal(normalizedValue(p,-1),-1);assert.equal(normalizedValue(p,.5),1.5);
+const mapping=[{controlId:'x',paramId:p.id,expected:{min:-1,max:3,default:0}}];
+assert.equal(bindFrame({controls:{x:.5}},mapping,[p]).asymmetric,1.5);
+assert.throws(()=>bindFrame({controls:{x:.5,unknown:0}},mapping,[p]));
+assert.throws(()=>bindFrame({controls:{x:.5}},mapping,[{...p,max:4}]));
+assert.throws(()=>bindFrame({controls:{x:0,y:0}},[...mapping,{...mapping[0],controlId:'y'}],[p]));
+assert.deepEqual(parameterDiff([p],[{...p,max:4}]).changed,['asymmetric']);
+function gif(frames){const b=new Uint8Array(4096),w=new GifWriter(b,4,4,{palette:[0,0xffffff],loop:0});for(const f of frames)w.addFrame(0,0,4,4,new Uint8Array(16).fill(f.color),{delay:f.delay,disposal:f.disposal??1,...(f.transparent?{transparent:0}:{})});return b.slice(0,w.end());}
+const stationary=decodeGif(gif([{color:1,delay:5,disposal:2},{color:1,delay:10,disposal:2}]));
+assert(stationary.ok);assert.equal(stationary.frames[1].diffScore,0);assert.equal(analyzeTiming(stationary.frames).peakFrame,null);
+const moving=decodeGif(gif([{color:0,delay:5,transparent:true},{color:1,delay:10},{color:0,delay:20,transparent:true}]));
+assert(moving.ok);assert.equal(moving.meta.durationMs,350);assert.equal(moving.meta.hasTransparency,true);
+assert.equal(analyzeTiming(moving.frames).startMs,50);assert.equal(analyzeTiming(moving.frames).periodMs,null);
+assert.equal(decodeGif(new Uint8Array([0,1,2])).ok,false);
+assert.equal(decodeGif(gif([{color:0,delay:5}]),{sampleEvery:2}).ok,false);
+console.log('PASS: bounds, neutral mapping, stale/partial bindings, snapshot diff, static/disposal, variable delay, transparency and corrupt GIF');

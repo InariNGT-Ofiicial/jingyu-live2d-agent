@@ -1,0 +1,29 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Edit Image 1 in-place, a 768x2048 adult anime character leg UV patch. Image 2 is the ORIGINAL author leg reference; match its skin painting style and its stylized soft glossy/oily sheen. The user wants the ORIGINAL ANIME GLOSS preserved, not matte skin, but Image 1 looks too realistically sculpted. Preserve small simple stylized white highlight dashes on knee and shin plus the soft broad thigh highlight, resembling the author's upper-thigh highlights in Image 2. Remove realistic tendons, carved kneecap shadows, deep calf gradients, ankle bone shading and photorealistic toenail lighting. Replace them with very low contrast, pale pink soft anime shading. Keep 2 or 3 restrained smooth glints; do not scatter many shiny streaks. Light porcelain-peach skin matching the original character, not saturated red, not a flat gradient. Exact same silhouette, position, frame, gray background, dimensions and anatomy landmark positions as Image 1. Do not alter the outline or toe positions. Repaint only skin surface lighting. Preserve linework. The desired look is glossy 2D Live2D illustration, NOT realistic shiny 3D skin and NOT matte skin. Output the edited texture patch only.",
+  "asset": "skin-gloss-anime-v6.png",
+  "editSource": "skin-masked-v4.png",
+  "styleReference": "outputs/studio-v2/leg-masked-reference.png",
+  "canvas": [
+    768,
+    2048
+  ],
+  "patchCanvasRect": [
+    237,
+    80,
+    293,
+    1887
+  ],
+  "sourceRect": [
+    2385,
+    1690,
+    345,
+    2220
+  ],
+  "validation": {
+    "silhouetteThresholdIoU": 0.9904,
+    "realBrowserBothLegs": true,
+    "fullRemovalAndRestore": true
+  },
+  "style": "Preserve stylized gloss; simplify realistic anatomical shading."
+}

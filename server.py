@@ -15,6 +15,11 @@ from urllib.parse import urlsplit, unquote, parse_qs
 from compiler import compile_plan, CompileError
 from model_profile import ROOT, MODEL_ROOT, capabilities, write_profile
 from demos import DEMOS
+import pet_control
+import minecraft_control
+from studio_runtime import Studio
+from studio_voice_stream import StreamingVoice
+from studio_danmaku import Danmaku
 from runtime_tools import executable
 from media_exports import ExportManager
 from planner import Planner, PlannerError
@@ -28,10 +33,11 @@ START=time.time()
 BACKEND='web'
 BUSY={'queued','compiling','deploying','playing','stopping'}
 VTS_CANCEL={}
-VERSION='1.4.0-beta.3'
+VERSION='1.5.0'
 PLANNER=Planner(ROOT/'.local'/'planner-settings.json')
 PLANS=deque(maxlen=30)
 PRESETS=PresetStore(ROOT/'.local'/'presets.json')
+VOICE=StreamingVoice(ROOT)
 
 def planning_state():
     with LOCK:return deepcopy({'config':PLANNER.public(),'tasks':list(PLANS)})
@@ -134,6 +140,8 @@ def run_vts_job(job):
     finally:
         VTS_CANCEL.pop(job['id'],None);(folder/'result.json').write_text(json.dumps(job,ensure_ascii=False,indent=2),encoding='utf-8')
 
+STUDIO=Studio(emit)
+DANMAKU=Danmaku(VOICE,STUDIO,emit)
 EXPORTS=ExportManager(emit,lock=LOCK)
 
 class Handler(BaseHTTPRequestHandler):
@@ -152,6 +160,32 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.valid_host(): return self.json({'error':'仅允许本机访问'},403)
         parsed=urlsplit(self.path); route=unquote(parsed.path)
+        if route=='/api/studio/state': return self.json(STUDIO.state())
+        if route=='/api/studio/danmaku':return self.json(DANMAKU.state())
+        if route=='/api/studio/voice/stream':
+            jid=parse_qs(parsed.query).get('id',[''])[0]
+            try:VOICE.check_stream(jid)
+            except ValueError as e:return self.json({'error':str(e)},404)
+            self.send_response(200)
+            self.send_header('Content-Type','application/x-ndjson; charset=utf-8')
+            self.send_header('Cache-Control','no-store')
+            self.send_header('Connection','close');self.end_headers();self.close_connection=True
+            for event in VOICE.events(jid):
+                self.wfile.write((json.dumps(event,ensure_ascii=False)+'\n').encode('utf-8'))
+                self.wfile.flush()
+            return
+        if route=='/api/studio/voice':
+            try:
+                jid=parse_qs(parsed.query).get('id',[''])[0]
+                return self.json(VOICE.get(jid) if jid else VOICE.state())
+            except ValueError as e:return self.json({'error':str(e)},400)
+        if route=='/api/studio/voice/audio':
+            try:audio=VOICE.audio(parse_qs(parsed.query).get('id',[''])[0]).read_bytes()
+            except (ValueError,OSError) as e:return self.json({'error':str(e)},404)
+            self.send_response(200);self.send_header('Content-Type','audio/wav')
+            self.send_header('Content-Length',str(len(audio)));self.end_headers();self.wfile.write(audio);return
+        if route=='/api/pet': return self.json(pet_control.status(self.server.server_port))
+        if route=='/api/minecraft': return self.json(minecraft_control.state())
         if route=='/api/state': return self.json(state())
         if route=='/api/presets':
             try:return self.json({'presets':PRESETS.list()})
@@ -232,6 +266,45 @@ class Handler(BaseHTTPRequestHandler):
             data=json.loads(self.rfile.read(length),parse_constant=reject_constant)
             if not isinstance(data,dict): raise CompileError('请求必须是 JSON 对象')
             route=urlsplit(self.path).path
+            if route=='/api/studio/heartbeat':return self.json(STUDIO.heartbeat(data))
+            if route=='/api/studio/report':return self.json(STUDIO.report(data))
+            if route=='/api/studio/danmaku/start':return self.json(DANMAKU.start(data),202)
+            if route=='/api/studio/danmaku/message':return self.json(DANMAKU.push(data),201)
+            if route=='/api/studio/danmaku/claim':return self.json(DANMAKU.claim())
+            if route=='/api/studio/danmaku/reply':return self.json(DANMAKU.reply(data),202)
+            if route=='/api/studio/danmaku/report':return self.json(DANMAKU.report(data))
+            if route=='/api/studio/danmaku/stop':return self.json(DANMAKU.stop())
+            if route=='/api/studio/voice/warmup':return self.json(VOICE.warmup(),202)
+            if route=='/api/studio/voice/start':return self.json(VOICE.begin(data),202)
+            if route=='/api/studio/voice/append':return self.json(VOICE.append(data),202)
+            if route=='/api/studio/voice/cancel':return self.json(VOICE.cancel(data.get('id')))
+            if route=='/api/studio/voice':return self.json(VOICE.start(data),202)
+            if route=='/api/studio/speak':
+                clients=[c for c in STUDIO.state()['clients'] if c['ready'] and (c['id']==data['clientId'] if data.get('clientId') else c['presentation']=='web')]
+                if len(clients)!=1:raise ValueError('请指定一个在线且就绪的 clientId')
+                client=clients[0]
+                if not client['telemetry'].get('audioReady'):raise ValueError('请先在目标直播间点击启用声音')
+                speech=VOICE.begin({**data,'inputComplete':data.get('inputComplete',True)})
+                try:job=STUDIO.command({'action':'speak','clientId':client['id'],'speech':speech})
+                except ValueError:
+                    VOICE.cancel(speech['id']);raise
+                return self.json(job,202)
+            if route=='/api/studio/command':
+                compiled=compile_plan(data['plan']) if data.get('action')=='play' and 'plan' in data else None
+                data.pop('speech',None)
+                if data.get('action')=='play' and data.get('audio')=='speech':
+                    speech=VOICE.get(data.get('speechId'))
+                    if speech['status']!='ready':raise ValueError('语音尚未完成')
+                    data['speech']={k:speech[k] for k in ['audioUrl','text','duration','performance','segments','sampleRate'] if k in speech}
+                return self.json(STUDIO.command(data,compiled),202)
+            if route=='/api/studio/obs':
+                if data.get('action') not in ['status','switch','record','stop']:raise ValueError('无效 OBS 操作')
+                p=subprocess.run([executable('capture_python'),str(ROOT/'studio_obs.py')],input=json.dumps(data),capture_output=True,text=True,encoding='utf-8',timeout=20,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                try:result=json.loads(p.stdout)
+                except ValueError:raise ValueError('OBS 控制依赖未安装或运行异常')
+                return self.json(result,400 if p.returncode else 200)
+            if route=='/api/pet': return self.json(pet_control.switch(data.get('enabled'), self.server.server_port))
+            if route=='/api/minecraft': return self.json(minecraft_control.command(data,self.server.server_port))
             if route=='/api/presets/save':return self.json(PRESETS.save(data.get('name'),data.get('plan')),201)
             if route=='/api/presets/delete':return self.json(PRESETS.delete(data.get('id')))
             if route=='/api/presets/play':

@@ -1,0 +1,16 @@
+{
+  "name": "jingyu-minecraft-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node bridge.cjs",
+    "test": "node test-attention.cjs"
+  },
+  "dependencies": {
+    "canvas": "3.1.0",
+    "mineflayer": "4.39.0",
+    "mineflayer-pathfinder": "2.4.5",
+    "prismarine-viewer": "1.33.0",
+    "vec3": "0.1.10"
+  }
+}

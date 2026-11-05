@@ -2,27 +2,11 @@
   "version": 1,
   "title": "犹豫求助 → 想通 → 自信讲解",
   "intent": "犹豫求助 → 想通 → 自信讲解",
-  "summary": "先收着肩和手求助，思考后站稳，竖指配合腕指变化解释，最后点头确认。",
+  "summary": "先垂手收肩求助，思考后站稳，竖指配合腕指变化解释，最后点头确认。",
   "view": "full",
   "group": "fullbody-emotion",
   "icon": "☝",
   "actions": [
-    {
-      "kind": "gesture",
-      "at": 0,
-      "duration": 8.2,
-      "name": "hand_on_chest",
-      "accents": [
-        {
-          "at": 2,
-          "duration": 3,
-          "values": {
-            "wrist": -0.2,
-            "forearm": 0.55
-          }
-        }
-      ]
-    },
     {
       "kind": "pose",
       "at": 0.3,

@@ -100,18 +100,22 @@ actions 中每个对象必须用 kind 指定动作类型，不是 type、action 
 trajectory/look/nod/shake_head/tilt/smile/blink/expression/gesture/talk/pose。
 只返回 JSON，不要解释、Markdown 或思考过程。格式：
 {"version":1,"title":"短标题","intent":"用户意图","summary":"表演说明","view":"portrait","actions":[...]}
-每段动作 at 为秒，duration 0.2..20，strength 0..1；总时长最多60秒，最多24段动作。
+每段动作 at 为秒，duration 0.2..20（expression 可持续到59秒），strength 0..1；总时长最多60秒，最多24段动作。
 同一参数上的动作不能重叠；look 会占用头/身体/眼球，smile 会占用嘴型/眼型。
-gesture 使用 hand_on_chest、point 或 grass，每段至少7秒，并避免两种手势同时出现。
+gesture 使用 hand_on_chest、point 或 grass，通常持续3.5..5秒；编译器保留作者进入/退出所需时间。双手联动使用单个 hand_on_chest 并设 pair:"point"，不要重叠两个独立 gesture。
 需要连续表演时优先一个 trajectory：frames 内 time 是该动作内秒数，所有帧相同1..12个输入；
 首帧在0.2秒以后、末帧在结束前0.2秒以前，至少2帧，帧间隔至少0.08秒。
-可以把头眼和身体轨迹、原生gesture、互不冲突的smile和blink按情绪节奏并行。
+默认活泼有动势，除非用户要求慢速：转向主过渡0.25..0.55秒，反向回望0.35..0.65秒，中间停留0.3..0.8秒；用预备、小幅回弹和缓收尾区分快慢，不要把每次转向拉成2..4秒。
+明显侧转优先 AngleX ±24..28 配合 PositionX ±16..24、PositionZ ±8..15；数值以能力目录范围为准。眼先看、头身跟上；这只是模型支持的侧转，不是背面或360度转身。
+头眼身体用连续 trajectory 串起多个节拍，中间不插默认姿态；原生gesture、互不冲突的smile和blink并行。
+所有动作共用同一个绝对时间轴 at。脸红等不冲突表情用单个 expression 从起始覆盖整个动作串，不按肢体片段重复淡出/淡入，也不串行放在转向之后；只在整段收尾时淡出。
 表情expression仅用目录里的name；默认exclusive，只有确实需要叠加到语义输入时才设layer:overlay。
 不要添加目录以外的控制，不直接写物理输出，不承诺自由走路、跑步、转身、语音或音频。
 无法实现时返回 {"unsupported":true,"reason":"清楚说明限制"}，不要拿无关动作替代。
 未经用户要求，不改变成人体型或服装。动作必须起承转合，结束后回到待机。
+避免每段都采用“竖食指→抚胸”或双手联动。按情境选择：讲解用指向、致谢用抚胸、逗趣可持草、迟疑或回望可全程默认垂手；无须每段抬手。用户请求多组时须让主要手势、转向顺序和停顿节奏不同，不只改标题或左右镜像。
 完全有效的示例（可调整，注意每个动作都有 kind）：
-{"version":1,"title":"侧目后抚胸致意","intent":"轻轻侧目，再抚胸微笑","view":"portrait","actions":[{"kind":"trajectory","at":0,"duration":12,"frames":[{"time":1,"values":{"AngleX":-18,"AngleY":-6,"AngleZ":8,"PositionX":-8,"ParamEyeBallX":-0.5}},{"time":4,"values":{"AngleX":7,"AngleY":4,"AngleZ":-6,"PositionX":5,"ParamEyeBallX":0.2}},{"time":9,"values":{"AngleX":-3,"AngleY":0,"AngleZ":2,"PositionX":0,"ParamEyeBallX":0}}]},{"kind":"gesture","name":"hand_on_chest","at":3,"duration":8},{"kind":"smile","at":3,"duration":8,"strength":0.6},{"kind":"blink","at":9,"duration":0.6,"count":1}]}
+{"version":1,"title":"利落侧转后害羞回望","intent":"侧转、回望并持续脸红","view":"portrait","actions":[{"kind":"trajectory","at":0,"duration":5.2,"frames":[{"time":0.2,"values":{"AngleX":-5,"PositionX":-3,"PositionZ":-2}},{"time":0.55,"values":{"AngleX":28,"PositionX":23,"PositionZ":12}},{"time":1.05,"values":{"AngleX":24,"PositionX":19,"PositionZ":9}},{"time":1.55,"values":{"AngleX":-26,"PositionX":-20,"PositionZ":-11}},{"time":2.2,"values":{"AngleX":-22,"PositionX":-17,"PositionZ":-8}},{"time":2.75,"values":{"AngleX":16,"PositionX":10,"PositionZ":5}},{"time":4.6,"values":{"AngleX":5,"PositionX":3,"PositionZ":1}}]},{"kind":"expression","name":"脸红","at":0.15,"duration":5.05,"strength":0.85},{"kind":"gesture","name":"hand_on_chest","pair":"point","at":0.3,"duration":4.6}]}
 能力目录：\n''' + json.dumps(catalog, ensure_ascii=False, separators=(',', ':'))
 
 

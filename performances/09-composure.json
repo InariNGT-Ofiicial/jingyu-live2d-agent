@@ -2,35 +2,11 @@
   "version": 1,
   "title": "强装镇定 → 慌张 → 坦然致谢",
   "intent": "强装镇定 → 慌张 → 坦然致谢",
-  "summary": "侧身竖指，受到质疑后收手、移开视线，最后抚胸前倾致谢。",
+  "summary": "先以头身姿态强装镇定，受到质疑后移开视线，最后抚胸前倾致谢。",
   "view": "full",
   "group": "fullbody-emotion",
   "icon": "✦",
   "actions": [
-    {
-      "kind": "gesture",
-      "at": 0.6,
-      "duration": 8,
-      "name": "point",
-      "accents": [
-        {
-          "at": 2,
-          "duration": 2.2,
-          "values": {
-            "wrist": 0.25,
-            "finger": 0.35
-          }
-        },
-        {
-          "at": 4.6,
-          "duration": 1.8,
-          "values": {
-            "upperArm": -0.15,
-            "forearm": 0.45
-          }
-        }
-      ]
-    },
     {
       "kind": "pose",
       "at": 0.2,

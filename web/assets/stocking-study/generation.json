@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen",
+  "asset": "bare-leg-v1.png",
+  "reference": "outputs/studio-v2/stocking-atlas.png",
+  "status": "prototype; not UV-aligned to original model",
+  "prompt": "Create a production 2D game sprite asset: ONE isolated adult female leg from upper thigh to toes, vertically aligned on transparent background, anime cel shaded soft pale pink skin. Reference image is a texture atlas: use ONLY the single vertical leg in the upper-middle at about x=62%, y=34%. Preserve that leg's front-facing pose, bent-knee silhouette, slim proportions, foot angle and soft shading style, but replace the white thigh-high stocking with bare skin continuous with the upper thigh. This is a neutral clothing-system asset, no torso, no pelvis, no underwear, no erotic framing. Output ONLY the isolated complete leg on true transparent background, no checkerboard, no labels, no other atlas elements, no garment, no shoe. Keep ample transparent margin, leg nearly full height. This is an anatomical base layer for testing a draggable clothing garment."
+}

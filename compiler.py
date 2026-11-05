@@ -1,5 +1,6 @@
 """Semantic action IR -> bounded, eased parameter tracks. Never parses prose."""
 import math
+from arm_binding import bind_arm_tracks
 from copy import deepcopy
 from model_profile import PARAMS, PRIMARY, EXPRESSIONS, MOTIONS, GESTURES, GESTURE_JOINTS, PHYSICS
 
@@ -85,7 +86,7 @@ def compile_plan(plan):
     for index, action in enumerate(actions):
         if not isinstance(action,dict): raise CompileError('每个动作必须是对象')
         kind=action.get('kind'); at=number(action.get('at',0),'at',0,59)
-        duration=number(action.get('duration',2.5),'duration',.2,59 if kind=='recorded' else 20)
+        duration=number(action.get('duration',2.5),'duration',.2,59 if kind in ('recorded','expression') else 20)
         strength=number(action.get('strength',.6),'strength',0,1)
         count=action.get('count',1)
         if isinstance(count,bool) or not isinstance(count,int) or not 1<=count<=4: raise CompileError('count 必须为 1..4 的整数')
@@ -99,22 +100,22 @@ def compile_plan(plan):
             # Screen-left maps to negative head and eyeball input in this model.
             if x or direction=='center':
                 hold('ParamEyeBallX',x*.75*strength,index,label,at,duration,.22)
-                hold('AngleX',x*23*strength,index,label,at+head_delay,duration-head_delay)
-                hold('PositionX',x*5*strength,index,label,at+body_delay,duration-body_delay)
+                hold('AngleX',x*28*strength,index,label,at+head_delay,duration-head_delay,.28)
+                hold('PositionX',x*14*strength,index,label,at+body_delay,duration-body_delay,.34)
             if y:
                 hold('ParamEyeBallY',y*.6*strength,index,label,at,duration,.22)
-                hold('AngleY',y*18*strength,index,label,at+head_delay,duration-head_delay)
+                hold('AngleY',y*18*strength,index,label,at+head_delay,duration-head_delay,.28)
         elif kind in ['nod','shake_head']:
             label='点头'+str(count)+'次' if kind=='nod' else '轻轻摇头'+str(count)+'次'
             if duration < count*.45: raise CompileError('重复点头／摇头的时间太短，请至少每次 0.45 秒')
             waves('AngleY' if kind=='nod' else 'AngleX',(-15 if kind=='nod' else 20)*strength,index,label,at,duration,count,kind=='shake_head')
-            waves('PositionY' if kind=='nod' else 'PositionX',(-3 if kind=='nod' else 4)*strength,index,label,at+.08,duration-.08,count,kind=='shake_head')
+            waves('PositionY' if kind=='nod' else 'PositionX',(-3 if kind=='nod' else 8)*strength,index,label,at+.08,duration-.08,count,kind=='shake_head')
         elif kind=='tilt':
             direction=action.get('direction','left')
             if direction not in ['left','right']: raise CompileError('歪头方向需要 left 或 right')
             label='轻轻歪头'; sign=-1 if direction=='left' else 1
-            hold('AngleZ',sign*15*strength,index,label,at,duration)
-            hold('PositionZ',-sign*3*strength,index,label,at+.1,duration-.1)
+            hold('AngleZ',sign*19*strength,index,label,at,duration)
+            hold('PositionZ',-sign*9*strength,index,label,at+.1,duration-.1)
         elif kind=='smile':
             label='自然微笑'
             for pid,v in [('ParamMouthForm',.8),('EyeSmile',.65),('MouthSmile_L',.55),('MouthSmile_R',.55)]:
@@ -148,10 +149,26 @@ def compile_plan(plan):
             name=action.get('name')
             if name not in GESTURES: raise CompileError(f'未知手势 {name}')
             g=GESTURES[name]; label=g['label']; enter=MOTIONS[g['enter']]; exit=MOTIONS[g['exit']]
+            pair=action.get('pair')
+            if pair is not None:
+                if name!='hand_on_chest' or pair!='point':raise CompileError('双手组合仅支持 hand_on_chest + point')
+                def combine(a,b):
+                    merged=deepcopy(a);ids={c['Id'] for c in merged['Curves']}
+                    for c in b['Curves']:
+                        if c['Id'] in ids:
+                            if c['Id'] not in ('Param56','Param57'):raise CompileError('双手原生动作存在未处理的共享通道')
+                        else:merged['Curves'].append(deepcopy(c))
+                    merged['Meta']['Duration']=max(a['Meta']['Duration'],b['Meta']['Duration'])
+                    return merged
+                right=GESTURES[pair]
+                enter=combine(enter,MOTIONS[right['enter']]);exit=combine(exit,MOTIONS[right['exit']])
+                label='双手联动 · 抚胸与食指回应'
             in_d=enter['Meta']['Duration']; out_d=exit['Meta']['Duration']
             if duration<in_d+out_d+.35:
                 duration=in_d+out_d+.35; warnings.append(f'{label} 已延长以保留作者的进入与收回动作')
             accents=action.get('accents',[])
+            binding=action.get('armBinding','guided')
+            if binding not in ('guided','off'):raise CompileError('armBinding 需要 guided/off')
             if not isinstance(accents,list) or len(accents)>12: raise CompileError('手势 accents 需要 0..12 段')
             joint_cues={}
             for cue in accents:
@@ -190,6 +207,19 @@ def compile_plan(plan):
                         points += [(st,rest),(st+fade,val),(st+dur-fade,val),(st+dur,rest)]
                 unique={round(t,5):v for t,v in points}
                 add(pid,at,duration+.12,sorted(unique.items()),index,label)
+            if accents and binding=='guided':
+                joints=GESTURE_JOINTS[name]
+                rest={k:sample_motion(next(c for c in enter['Curves'] if c['Id']==pid)['Segments'],in_d) for k,pid in joints.items()}
+                windows=[]
+                for cue in sorted(accents,key=lambda c:c['at']):
+                    if not any(k in cue['values'] for k in ['upperArm','forearm','wrist','perspective']):continue
+                    a,b=cue['at'],cue['at']+cue['duration']
+                    if windows and a<=windows[-1][1]:windows[-1][1]=max(b,windows[-1][1])
+                    else:windows.append([a,b])
+                adjusted=False
+                for a,b in windows:adjusted|=bind_arm_tracks([t for t in tracks if t['action']==index],joints,rest,a,b,PARAMS)
+                if adjusted:
+                    warnings.append(f'{label}：已应用手臂联动，限制小臂过度偏离原手势姿态')
             duration+=.12
         elif kind=='talk':
             label='说话口型（无音频）'; points=[(0,0)]

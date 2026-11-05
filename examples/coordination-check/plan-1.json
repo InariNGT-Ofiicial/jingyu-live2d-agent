@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "title": "联动检查 A · 兴奋招呼与双手回应",
+  "view": "full",
+  "actions": [
+    {
+      "kind": "trajectory",
+      "duration": 12,
+      "frames": [
+        {
+          "time": 0.3,
+          "values": {
+            "AngleX": -8,
+            "AngleY": 2,
+            "AngleZ": 4,
+            "PositionX": -2.55,
+            "PositionY": -0.85,
+            "PositionZ": -1.9124999999999999,
+            "LeanInput": 1.7,
+            "ParamEyeBallX": -0.6,
+            "ParamEyeBallY": 0.1
+          }
+        },
+        {
+          "time": 0.75,
+          "values": {
+            "AngleX": 23,
+            "AngleY": 7,
+            "AngleZ": -12,
+            "PositionX": 11.475,
+            "PositionY": 2.55,
+            "PositionZ": 7.6499999999999995,
+            "LeanInput": -11.9,
+            "ParamEyeBallX": 0.9,
+            "ParamEyeBallY": 0.25
+          }
+        },
+        {
+          "time": 1.6,
+          "values": {
+            "AngleX": 18,
+            "AngleY": 4,
+            "AngleZ": -8,
+            "PositionX": 8.925,
+            "PositionY": 0.85,
+            "PositionZ": 5.1,
+            "LeanInput": -6.8,
+            "ParamEyeBallX": 0.6,
+            "ParamEyeBallY": 0.1
+          }
+        },
+        {
+          "time": 2.15,
+          "values": {
+            "AngleX": -22,
+            "AngleY": -3,
+            "AngleZ": 13,
+            "PositionX": -11.475,
+            "PositionY": -1.7,
+            "PositionZ": -7.6499999999999995,
+            "LeanInput": 10.2,
+            "ParamEyeBallX": -0.85,
+            "ParamEyeBallY": -0.15
+          }
+        },
+        {
+          "time": 3.1,
+          "values": {
+            "AngleX": -17,
+            "AngleY": 3,
+            "AngleZ": 8,
+            "PositionX": -7.6499999999999995,
+            "PositionY": 1.7,
+            "PositionZ": -4.4625,
+            "LeanInput": 4.25,
+            "ParamEyeBallX": -0.5,
+            "ParamEyeBallY": 0.25
+          }
+        },
+        {
+          "time": 3.65,
+          "values": {
+            "AngleX": 20,
+            "AngleY": 8,
+            "AngleZ": -10,
+            "PositionX": 9.5625,
+            "PositionY": 2.55,
+            "PositionZ": 6.375,
+            "LeanInput": -8.5,
+            "ParamEyeBallX": 0.8,
+            "ParamEyeBallY": 0.35
+          }
+        },
+        {
+          "time": 5,
+          "values": {
+            "AngleX": 10,
+            "AngleY": 4,
+            "AngleZ": -5,
+            "PositionX": 5.1,
+            "PositionY": 0.85,
+            "PositionZ": 3.8249999999999997,
+            "LeanInput": -5.1,
+            "ParamEyeBallX": 0.35,
+            "ParamEyeBallY": 0.1
+          }
+        },
+        {
+          "time": 5.5,
+          "values": {
+            "AngleX": -16,
+            "AngleY": -5,
+            "AngleZ": 10,
+            "PositionX": -7.6499999999999995,
+            "PositionY": -1.7,
+            "PositionZ": -5.1,
+            "LeanInput": 10.2,
+            "ParamEyeBallX": -0.5,
+            "ParamEyeBallY": -0.35
+          }
+        },
+        {
+          "time": 7,
+          "values": {
+            "AngleX": -8,
+            "AngleY": -2,
+            "AngleZ": 5,
+            "PositionX": -3.8249999999999997,
+            "PositionY": -0.85,
+            "PositionZ": -2.55,
+            "LeanInput": 5.1,
+            "ParamEyeBallX": -0.2,
+            "ParamEyeBallY": -0.15
+          }
+        },
+        {
+          "time": 8.2,
+          "values": {
+            "AngleX": 12,
+            "AngleY": 5,
+            "AngleZ": -7,
+            "PositionX": 6.375,
+            "PositionY": 1.7,
+            "PositionZ": 4.4625,
+            "LeanInput": -6.8,
+            "ParamEyeBallX": 0.45,
+            "ParamEyeBallY": 0.2
+          }
+        },
+        {
+          "time": 9.6,
+          "values": {
+            "AngleX": 5,
+            "AngleY": 2,
+            "AngleZ": -3,
+            "PositionX": 3.1875,
+            "PositionY": 0.85,
+            "PositionZ": 1.9124999999999999,
+            "LeanInput": -3.4,
+            "ParamEyeBallX": 0.2,
+            "ParamEyeBallY": 0.1
+          }
+        },
+        {
+          "time": 11.5,
+          "values": {
+            "AngleX": 0,
+            "AngleY": 0,
+            "AngleZ": 0,
+            "PositionX": 0.0,
+            "PositionY": 0.0,
+            "PositionZ": 0.0,
+            "LeanInput": 0.0,
+            "ParamEyeBallX": 0,
+            "ParamEyeBallY": 0
+          }
+        }
+      ]
+    },
+    {
+      "kind": "gesture",
+      "at": 0,
+      "duration": 10,
+      "name": "hand_on_chest",
+      "pair": "point",
+      "accents": [
+        {
+          "at": 2,
+          "duration": 1.4,
+          "values": {
+            "upperArm": 0.25,
+            "forearm": 0.2,
+            "wrist": -0.25
+          }
+        },
+        {
+          "at": 5,
+          "duration": 1.5,
+          "values": {
+            "upperArm": -0.25,
+            "forearm": -0.15,
+            "wrist": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "kind": "smile",
+      "at": 1,
+      "duration": 9,
+      "strength": 0.8
+    },
+    {
+      "kind": "expression",
+      "name": "脸红",
+      "at": 1,
+      "duration": 9,
+      "strength": 0.7
+    },
+    {
+      "kind": "blink",
+      "at": 4.3,
+      "duration": 0.6,
+      "side": "right"
+    }
+  ]
+}

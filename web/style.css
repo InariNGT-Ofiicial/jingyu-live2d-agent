@@ -7,3 +7,9 @@
 .external-agent{margin:20px 0;color:#547164}.external-agent>summary{cursor:pointer;font-size:12px;margin-bottom:16px}.beta-help{font-size:11px;line-height:1.8;color:#547164}
 
 .user-presets{margin:22px 0}.user-preset-row{display:flex;gap:8px;align-items:center}.user-preset-row .demo-button{flex:1;min-width:0}.user-preset-row strong{overflow-wrap:anywhere}.preset-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.preset-delete{flex:none}#preset-save-dialog,#preset-delete-dialog{max-width:440px;width:calc(100% - 48px);padding:28px;border:1px solid #d7e4da;border-radius:20px;color:#28483e}#preset-name{box-sizing:border-box;display:block;width:100%;margin:12px 0;padding:12px;border:1px solid #b9cdc0;border-radius:10px;font:inherit}#preset-save-status,#preset-delete-name{font-size:14px;line-height:1.7}#preset-delete-confirm{color:#a03d3d}
+.stage-options{flex-wrap:wrap;row-gap:12px}.stage-options label{white-space:nowrap}.stage-options input[type=range]{max-width:100px}.stage-options output{display:inline-block;min-width:38px}
+
+.touch-feedback{position:absolute;z-index:8;top:8%;left:12%;right:12%;pointer-events:none;text-align:center;white-space:normal;font-size:15px;color:#203e3c;text-shadow:0 1px 3px #fff;background:#ffffffe8;border-radius:12px;padding:12px}.touch-feedback:empty{display:none}#touch-status{font-size:12px;color:#688579}
+
+[data-holding] { cursor: grabbing; user-select: none; }
+#model-canvas, #canvas { touch-action: none; }

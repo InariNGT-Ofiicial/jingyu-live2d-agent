@@ -10,7 +10,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_DIRS = {'.local', '.venv', 'venv', 'node_modules', 'model', 'textures',
-                'logs', 'exports', 'evidence', 'research', 'stress', 'work', '__pycache__'}
+                'logs', 'exports', 'evidence', 'research', 'stress', 'work', '__pycache__', 'runtime', 'voice'}
 PRIVATE_FILES = {'runtime-config.json', 'presets.json', 'planner-settings.json',
                  'model-profile.json', 'stress-catalog.json', 'drawables-inventory.json'}
 PRIVATE_SUFFIXES = ('.moc3', '.psd', '.model3.json', '.physics3.json', '.exp3.json',

@@ -1,0 +1,70 @@
+{
+  "inspect": {
+    "text": "我先看看附近有什么。",
+    "emotion": "curious"
+  },
+  "walk": {
+    "text": "找到目标了，我走近一点。",
+    "emotion": "neutral"
+  },
+  "dig": {
+    "text": "现在开始采集这一块。",
+    "emotion": "neutral"
+  },
+  "collected": {
+    "text": "采到了，已经放进背包。",
+    "emotion": "happy"
+  },
+  "place": {
+    "text": "我在这里放一块木板。",
+    "emotion": "neutral"
+  },
+  "placed": {
+    "text": "木板放好了。",
+    "emotion": "happy"
+  },
+  "done": {
+    "text": "这轮采集和放置完成啦。",
+    "emotion": "happy"
+  },
+  "failed": {
+    "text": "这次没成功，我先停下来。",
+    "emotion": "serious"
+  },
+  "craft": {
+    "text": "材料够了，我来合成工具。",
+    "emotion": "neutral"
+  },
+  "smelt": {
+    "text": "接下来烧一点木炭，用来做火把。",
+    "emotion": "neutral"
+  },
+  "explore": {
+    "text": "附近还没有合适的资源，我换个方向找找。",
+    "emotion": "curious"
+  },
+  "eat": {
+    "text": "有点饿了，先吃点东西。",
+    "emotion": "gentle"
+  },
+  "hunt": {
+    "text": "找到食物来源了，我去补充一下。",
+    "emotion": "neutral"
+  },
+  "danger": {
+    "text": "附近有危险，我先躲开。",
+    "emotion": "serious"
+  },
+  "shelter": {
+    "text": "先把自己安顿好，检查一下庇护所。",
+    "emotion": "serious"
+  },
+  "survived": {
+    "text": "基础物资和营地都准备好了。",
+    "emotion": "happy"
+  },
+  "cook": {
+    "text": "先把食物烤熟，待会儿就能补充体力了。",
+    "emotion": "gentle"
+  }
+}

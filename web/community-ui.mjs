@@ -1,3 +1,4 @@
+import {bindCommunityTools} from './community-tools.mjs';
 const $=id=>document.getElementById(id);
 const held=new Map(), partValues=new Map();
 const samples={tuner:{format:'live2d-tuner/timeline-v1',name:'侧目',duration:1,keyframes:[{t:0,v:{}},{t:.5,v:{ParamAngleX:-15}},{t:1,v:{}}]},dsh:{source:'pose',priority:50,controls:{'head.roll':.4,'gaze.x':-.5}},maibot:{type:'state:emotion',data:{emotion:'happy'}}};
@@ -20,6 +21,8 @@ try {
  const model=await PIXI.live2d.Live2DModel.from('/model/大肥鱼.model3.json',{autoInteract:false,motionPreload:'NONE'});
  model.scale.set(Math.min(540/model.width,750/model.height));model.anchor.set(.5,0);model.position.set(280,10);app.stage.addChild(model);
  const core=model.internalModel.coreModel,parts=core._model.parts,defaults=new Map();
+ const p=profile.allParameters.find(p=>p.id==='AngleX');
+ samples['dsh-adapter']={frame:{controls:{'head.yaw':.5}},mapping:[{controlId:'head.yaw',paramId:p.id,expected:{min:p.min,max:p.max,default:p.default}}]};
  for(const p of profile.allParameters){
    defaults.set(p.id,p.default);
    const current=core.getParameterValueById(p.id);
@@ -33,9 +36,10 @@ try {
  Array.from(parts.ids).forEach((id,i)=>control('parts',id,'range',0,1,parts.opacities[i],v=>partValues.set(i,v)));
  model.internalModel.on('beforeModelUpdate',()=>{for(const [id,v] of held)core.setParameterValueById(id,v);for(const [i,v] of partValues)parts.opacities[i]=v;});
  let timer,start,frames=[],clip;
+ bindCommunityTools({model,app,profile,busy:()=>$('record').disabled});
  function sample(t){const v=Object.fromEntries([...held].filter(([id,x])=>Math.abs(defaults.get(id)-x)>1e-6));if(!frames.length||t>frames.at(-1).t)frames.push({t,v});}
  function finish(){clearInterval(timer);const duration=Math.min(58,Math.max(.2,(performance.now()-start)/1000));sample(duration);clip={format:'live2d-tuner/timeline-v1',name:$('name').value,duration,keyframes:frames};$('payload').value=JSON.stringify(clip);$('source').value='tuner';$('stop').disabled=true;$('record').disabled=false;$('download').disabled=false;$('status').textContent='已录制 '+frames.length+' 帧';}
- $('record').disabled=false;$('record').onclick=()=>{frames=[];start=performance.now();sample(0);$('record').disabled=true;$('stop').disabled=false;$('status').textContent='正在录制';timer=setInterval(()=>{const t=(performance.now()-start)/1000;if(t>=58)finish();else sample(t);},100);};
+ $('record').disabled=false;$('record').onclick=()=>{if(window.communityTools.busy){$('status').textContent='请先结束探针';return;}frames=[];start=performance.now();sample(0);$('record').disabled=true;$('stop').disabled=false;$('status').textContent='正在录制';timer=setInterval(()=>{const t=(performance.now()-start)/1000;if(t>=58)finish();else sample(t);},100);};
  $('stop').onclick=finish;
  $('download').onclick=()=>{const a=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify(clip,null,2)],{type:'application/json'}));a.href=url;a.download='jingyu-timeline.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
  $('status').textContent='模型就绪';

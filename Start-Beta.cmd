@@ -1,6 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+if exist "runtime\python\python.exe" (
+  call Start-Local.cmd %*
+  exit /b
+)
 where py >nul 2>nul
 if errorlevel 1 (
   python launch.py

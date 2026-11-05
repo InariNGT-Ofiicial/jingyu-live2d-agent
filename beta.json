@@ -1,1 +1,56 @@
-{"name":"鲸语 Live2D 动作工作台","version":"1.4.0-beta.3","platform":"Windows","port":61942,"providers":["OpenAI Chat Completions","OpenAI Responses","DSH desktop account","external Agent HTTP/CLI"],"backends":["web","vts"],"exports":["transparent GIF","opaque H.264 MP4"],"modelBundled":false}
+{
+  "name": "鲸语 Live2D 动作工作台",
+  "version": "1.5.0",
+  "platform": "Windows",
+  "port": 61942,
+  "providers": [
+    "OpenAI Chat Completions",
+    "OpenAI Responses",
+    "DSH desktop account",
+    "external Agent HTTP/CLI"
+  ],
+  "backends": [
+    "web",
+    "vts"
+  ],
+  "exports": [
+    "transparent GIF",
+    "opaque H.264 MP4"
+  ],
+  "modelBundled": false,
+  "releaseDate": "2026-11-06",
+  "features": [
+    "natural-language-planning",
+    "web-vts-backends",
+    "vts-hot-deploy",
+    "presets-save-delete-replay",
+    "web-vts-export",
+    "community-debug-panels",
+    "tracking-mcp",
+    "desktop-pet",
+    "studio-scenes-obs",
+    "cosyvoice-ds-voice",
+    "gaze-idle-motion",
+    "arm-coupling",
+    "touch-hold-drag",
+    "web-native-transparent-pet",
+    "desktop-pointer-gaze",
+    "pet-full-touch-controls",
+    "original-model-stocking-drag-web",
+    "cosyvoice-streaming-performance",
+    "portable-windows-runtimes"
+  ],
+  "experimentalFeatures": [
+    "minecraft-validation",
+    "stocking-art-study"
+  ],
+  "externalDependencies": [
+    "Python",
+    "Node.js",
+    "FFmpeg",
+    "VTube Studio (optional)",
+    "OBS Studio (optional)",
+    "CosyVoice and DS voice preset (optional)",
+    "Electron (web desktop pet)"
+  ]
+}

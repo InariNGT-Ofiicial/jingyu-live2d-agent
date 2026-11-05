@@ -1,6 +1,7 @@
-鲸语 Live2D 动作工作台 1.4.0-beta.3 · Windows 本地测试版
+鲸语 Live2D 动作工作台 1.5.0 · Windows 本地工作台
 
 启动
+含依赖整合包：直接解压到英文目录，双击 Start-Local.cmd；已附带 Python、Node、FFmpeg、Electron 和本地语音依赖，端口 61945。以下安装步骤用于源码版。
 1. 安装 Python 3.10+，并按 README.md 准备模型与 Live2D Cubism Core。公开仓库不含模型或 Core。
 2. 双击 Start-Beta.cmd，完整版自动使用 model/DeepSeek，参数映射与预设已配置。
    代码包首次粘贴包含“大肥鱼.model3.json”的模型目录。
@@ -69,9 +70,16 @@ python agent_tool.py --schemas
 
 边界
 这是本机 beta：会话任务、指令箱在重启后清空；导出文件与配置保留。
-自由走路、背面转身、真实语音生成不在当前模型能力内。兼容 API 协议不保证
+自由走路、背面转身不在当前模型能力内；语音合成需外部 CosyVoice 和 DS 声线。兼容 API 协议不保证
 每个模型都能稳定编排。不要把开发端口暴露到公网。
 本机完整版包含原模型、PSD 与原始使用说明；作者说明禁止擅自重新分发完整模型。
-代码包不含模型。两种包都不含个人日志、API Key、DSH/VTS 凭据和第三方可执行文件。
+代码包不含模型与第三方可执行文件。本机整合包含依赖；两种包均不含个人日志、API Key 或 DSH/VTS 凭据。
 Live2D/Pixi 依赖来源与适用许可见 vendor-sources.json 与 THIRD-PARTY.txt。
 原画及拆分：神宫凉子；Live2D 建模：霓虹猫_NeonNeko。
+
+1.5 整合入口
+主舞台：视线跟随、随机待机、身体摇晃、手臂联动、点击 / 长按拖动。
+场景实验：暖冷直播间、OBS 控制、DS CosyVoice 合成与台词播放。
+社区调试台 / 压力测试：动作与配饰调试、参数探索。桌宠通过主舞台开关启动。
+服装交互为默认组件：工作台、网页桌宠和直播间默认启用袜口拖拽，可关闭并记住选择，也可恢复原袜。当前 v6 贴图随包，尚未接入 VTS 或离线交互导出。
+完整 1.5 功能与接口说明见 README.md、docs/studio-tools.md。

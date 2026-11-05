@@ -1,5 +1,6 @@
 import {lowerFrameToIntents} from './community-vendor/motion-intent.mjs';
 import {normalizeServerMessage} from './community-vendor/maibot-protocol.mjs';
+import {bindFrame} from './model-tools.mjs';
 
 const bindings = [
   ['head.yaw','AngleX',30], ['head.pitch','AngleY',30], ['head.roll','AngleZ',30],
@@ -7,7 +8,7 @@ const bindings = [
   ['torso.lean','LeanInput',20], ['torso.sway','PositionX',20],
 ].map(([controlId,paramId,scale])=>({controlId,paramId,scale}));
 const expression = name => ({kind:'expression',name});
-export function communityPlan(source, payload) {
+export function communityPlan(source, payload,parameters=[]) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw Error('输入需要 JSON 对象');
   let actions, title;
   if (source==='tuner') {
@@ -19,6 +20,8 @@ export function communityPlan(source, payload) {
     if (rejected.length || !intents.length) throw Error('无法绑定 DSH 控制项：'+JSON.stringify(rejected));
     actions=[{kind:'pose',values:Object.assign({},...intents.map(i=>i.params))}];
     title='DSH 语义姿态';
+  } else if(source==='dsh-adapter'){
+    actions=[{kind:'pose',values:bindFrame(payload.frame,payload.mapping,parameters)}];title='DSH 模型映射姿态';
   } else if (source==='maibot') {
     const e=normalizeServerMessage(payload);
     const emotions={happy:{kind:'smile'},shy:expression('脸红'),sad:expression('流泪')};

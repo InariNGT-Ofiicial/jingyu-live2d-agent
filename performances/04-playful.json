@@ -65,12 +65,6 @@
       "strength": 0.5
     },
     {
-      "kind": "gesture",
-      "at": 11,
-      "duration": 7,
-      "name": "hand_on_chest"
-    },
-    {
       "kind": "expression",
       "at": 11.7,
       "duration": 2.8,

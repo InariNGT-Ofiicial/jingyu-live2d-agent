@@ -30,9 +30,16 @@ __pycache__/
 *.mp4
 *.gif
 .venv/
+node_modules/
 
 web/data/stress-catalog.json
 drawables-inventory.json
 
 performances/*-result.json
 .pytest_cache/
+# Local integrated distributions and generated character/voice/scene media.
+runtime/
+voice/
+*.wav
+web/assets/**/*.png
+web/scene-assets/**/*.png

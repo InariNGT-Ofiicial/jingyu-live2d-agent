@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),{project}=require('./attention.cjs');
+const eye={x:0,y:1.6,z:0};
+const center=project({x:0,y:1.6,z:-5},eye,0,0);
+assert.equal(center.x,.5);assert.equal(center.y,.5);assert(center.visible);
+assert(project({x:-2,y:1.6,z:-5},eye,0,0).x<.5);
+assert(project({x:2,y:1.6,z:-5},eye,0,0).x>.5);
+assert(project({x:0,y:3,z:-5},eye,0,0).y<.5);
+assert(!project({x:0,y:1.6,z:5},eye,0,0).visible);
+assert(Math.abs(project({x:-5,y:1.6,z:0},eye,Math.PI/2,0).x-.5)<1e-8);
+console.log('Game target projection: center, left/right, height, behind camera and yaw passed');

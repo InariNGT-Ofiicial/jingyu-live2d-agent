@@ -1,4 +1,5 @@
 import {DriverPipeline,blendExpression} from './driver-pipeline.mjs';
+import {IdleEvents} from './idle-events.mjs';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const smooth=t=>t*t*(3-2*t);
 export function samplePoints(points,t){
@@ -29,8 +30,12 @@ export class MotionEngine{
     this.managed=new Set([...profile.parameters.map(p=>p.id),...Array.from({length:13},(_,i)=>`key${i+1}`),...profile.idleMotion.Curves.filter(c=>c.Target==='Parameter').map(c=>c.Id)]);
     this.current=new Map();this.clock=0;this.elapsed=0;this.job=null;this.paused=false;this.idle=true;this.amplitude=1;this.gaze=null;this.frames=0;this.lastStatus='idle';
     this.physicsOutputs=new Set(profile.physicsOutputIds||[]);
+    this.sway=false;this.swayStrength=.65;this.swayPeriod=8;this.look={x:0,y:0,hx:0,hy:0};
+    this.randomIdle=false;this.idleEvents=new IdleEvents();this.chestGain=1;
     this.pipeline=new DriverPipeline()
       .add('idle',10,c=>this.applyIdle(c)).add('gaze',20,c=>this.applyGaze(c))
+      .add('speech',25,c=>this.applySpeech(c))
+      .add('attention',27,c=>this.applyAttention(c))
       .add('motion',30,c=>this.applyMotion(c)).add('blink',40,c=>this.applyBlink(c))
       .add('expression',50,c=>this.applyExpressions(c)).add('commit',60,c=>this.commit(c));
   }
@@ -52,17 +57,43 @@ export class MotionEngine{
       const ended=this.job;this.job=null;this.lastStatus='completed';this.notify('completed',ended);
     }
   }
-  applyIdle({set,phase}){
+  applyIdle({set,target,phase}){
     if(this.idle){
       set('ParamBreath',.42+.24*Math.sin(phase*1.45));
       set('AngleX',1.15*Math.sin(phase*.55));set('AngleY',.7*Math.sin(phase*.72+.4));set('AngleZ',.6*Math.sin(phase*.48));
       set('PositionX',.5*Math.sin(phase*.55-.2));set('PositionZ',.35*Math.sin(phase*.48-.25));
       const motion=this.profile.idleMotion,t=phase%motion.Meta.Duration;
       for(const c of motion.Curves)if(c.Target==='Parameter')set(c.Id,sampleMotion(c.Segments,t));
+      if(this.sway){
+        const p=phase*2*Math.PI/clamp(this.swayPeriod,4,16),a=clamp(this.swayStrength,0,1);
+        set('PositionX',a*3.2*Math.sin(p));set('PositionY',a*.6*Math.sin(2*p+.4));
+        set('PositionZ',a*2*Math.sin(p-.35));
+        set('AngleX',a*3*Math.sin(p-.6));set('AngleY',a*1.2*Math.sin(2*p-.3));set('AngleZ',a*2*Math.sin(p-.45));
+      }
     }
+    const extra=this.idleEvents.sample(phase,this.idle&&this.randomIdle&&!this.job&&!this.speechReserved,this.swayStrength);
+    for(const [id,v] of Object.entries(extra))if(this.params.has(id)&&!this.physicsOutputs.has(id))set(id,(target.get(id)??this.params.get(id).default)+v);
   }
-  applyGaze({set}){
-    if(this.gaze){set('ParamEyeBallX',this.gaze.x*.5);set('ParamEyeBallY',this.gaze.y*.4);}
+  applyGaze({set,target,dt}){
+    if(!this.gaze&&Object.values(this.look).every(v=>Math.abs(v)<.00001))return;
+    const x=clamp(this.gaze?.x||0,-1,1),y=clamp(this.gaze?.y||0,-1,1),l=this.look;
+    l.x+=(x-l.x)*(1-Math.exp(-dt/.09));l.y+=(y-l.y)*(1-Math.exp(-dt/.09));
+    l.hx+=(x-l.hx)*(1-Math.exp(-dt/.32));l.hy+=(y-l.hy)*(1-Math.exp(-dt/.32));
+    set('ParamEyeBallX',l.x*.65);set('ParamEyeBallY',l.y*.5);
+    set('AngleX',(target.get('AngleX')||0)+l.hx*9);set('AngleY',(target.get('AngleY')||0)+l.hy*6);
+  }
+  applySpeech({set}){
+    for(const [id,value] of Object.entries(this.speechPose?.values||{}))
+      if(this.params.has(id)&&!this.physicsOutputs.has(id))set(id,value);
+  }
+  applyAttention({set,target,dt}){
+    const a=this.attention?.until>this.clock?this.attention:null;
+    const l=this.attentionLook??(this.attentionLook={x:0,y:0,weight:0});
+    l.weight+=((a?1:0)-l.weight)*(1-Math.exp(-dt/.25));
+    if(l.weight<.001)return;
+    l.x+=((a?.x||0)-l.x)*(1-Math.exp(-dt/.14));l.y+=((a?.y||0)-l.y)*(1-Math.exp(-dt/.14));
+    for(const [id,v] of Object.entries({ParamEyeBallX:l.x*.7,ParamEyeBallY:l.y*.55}))set(id,(target.get(id)||0)*(1-l.weight)+v*l.weight);
+    set('AngleX',(target.get('AngleX')||0)+l.x*12*l.weight);set('AngleY',(target.get('AngleY')||0)+l.y*7*l.weight);
   }
   applyMotion({set,explicit,expressions}){
     if(this.job){
@@ -94,6 +125,28 @@ export class MotionEngine{
     }
   }
   commit({target,dt}){
+    if(this.job||this.speechReserved){this.touchInput=null;this.touchBody={x:0,y:0};}
+    const body=this.touchBody??(this.touchBody={x:0,y:0}),touch=this.touchInput;
+    const chest=touch?.zone==='chest',follow=1-Math.exp(-dt/(chest?.16:.26));
+    this.touchHeldTime=chest?(this.touchHeldTime||0)+dt:0;
+    this.touchShy=this.job?0:(this.touchShy||0)+((chest?1:0)-(this.touchShy||0))*(1-Math.exp(-dt/(chest?.3:.7)));
+    if(this.touchShy>.001){
+      const w=this.touchShy;
+      // Brief bashful glance, then look back; repeat gently during a long hold.
+      const phase=(this.touchHeldTime||0)%6;
+      const away=chest?samplePoints([[0,1],[.65,1],[1.6,0],[4.8,0],[5.6,1],[6,1]],phase):0;
+      target.set('key7',Math.max(target.get('key7')||0,w*.88));
+      for(const [id,value] of Object.entries({ParamEyeBallX:-.4*away*w,ParamEyeBallY:-.32*away*w}))
+        target.set(id,(target.get(id)||0)*(1-w)+value);
+      target.set('ParamMouthForm',Math.max(target.get('ParamMouthForm')||0,w*.3));
+      target.set('AngleY',(target.get('AngleY')||0)-w*3*away);
+    }
+    body.x+=((chest?touch.x:0)-body.x)*follow;
+    body.y+=((chest?touch.y:0)-body.y)*follow;
+    if(!this.job)for(const [id,offset] of Object.entries({PositionX:body.x*20,PositionZ:body.x*7,PositionY:body.y*3,LeanInput:-body.y*10,AngleX:body.x*10,AngleY:body.y*8})){
+      if(this.params.has(id))target.set(id,(target.get(id)??this.params.get(id).default)+offset);
+    }
+    if(this.touchInput?.zone==='head'){target.set('AngleX',this.touchInput.x*22);target.set('AngleY',this.touchInput.y*16);target.set('AngleZ',-this.touchInput.x*9);}
     for(const [id,v]of target){
       const p=this.params.get(id);if(!p)continue;
       const prev=this.current.get(id)??p.default,tau=id.includes('Eye')&&id.includes('Open')?.016:.055;
@@ -102,10 +155,10 @@ export class MotionEngine{
     }
   }
   telemetry(){
-    const ids=['AngleX','AngleY','AngleZ','ParamAngleX','ParamAngleY','ParamAngleZ','ParamEyeLOpen','ParamEyeROpen','ParamMouthForm','ParamMouthOpenY','ParamBreath','Movement1','Movement2','Movement3','PositionX','PositionY','PositionZ','HipAngleX','LEGAngleZ2','Param33','LArm','LForearm','LWrist','LHand','LHand2','RArm','RForearm','RWrist','RHand','RHand2','Param36','Param39','Param41','Param42','Param43','Param62','Param59','Param60','Param61'];
+    const ids=['ParamBodyAngleX','ParamBodyAngleY','ParamBodyAngleZ','ChestX1','ChestY1','ChestY4','AngleX','AngleY','AngleZ','ParamAngleX','ParamAngleY','ParamAngleZ','ParamEyeLOpen','ParamEyeROpen','ParamMouthForm','ParamMouthOpenY','ParamBreath','Movement1','Movement2','Movement3','PositionX','PositionY','PositionZ','HipAngleX','LEGAngleZ2','Param33','LArm','LForearm','LWrist','LHand','LHand2','RArm','RForearm','RWrist','RHand','RHand2','Param36','Param39','Param41','Param42','Param43','Param62','Param59','Param60','Param61'];
     const observed=[...new Set([...ids,...this.profile.parameters.map(p=>p.id),...this.managed])];
     return {elapsed:+this.elapsed.toFixed(3),frames:this.frames,jobId:this.job?.id??null,status:this.lastStatus,amplitude:this.amplitude,
-      driverStages:this.pipeline.names(),expressions:this.expressionTelemetry||[],
+      driverStages:this.pipeline.names(),expressions:this.expressionTelemetry||[],idleEvent:this.idleEvents.active?.name||null,idleEventCount:this.idleEvents.count,chestGain:this.chestGain,
       nonFinite:this.profile.allParameters.filter(p=>!Number.isFinite(this.core.getParameterValueById(p.id))).map(p=>p.id),
       values:Object.fromEntries(observed.map(id=>[id,+this.core.getParameterValueById(id).toFixed(4)]))};
   }

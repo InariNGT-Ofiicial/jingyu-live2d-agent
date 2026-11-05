@@ -5,3 +5,5 @@ patch_renderer.py                text eol=lf
 renderer-patch.json              text eol=lf
 web/vendor/cubism4.min.js        text eol=lf
 web/vendor/cubism4.colors.min.js text eol=lf
+# Preserve upstream license text verbatim, including its original indentation.
+licenses/*.txt -whitespace

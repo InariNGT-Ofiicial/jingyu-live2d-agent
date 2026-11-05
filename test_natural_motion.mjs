@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {MotionEngine} from './web/engine.mjs';
+const profile=JSON.parse(fs.readFileSync(new URL('./web/data/model-profile.json',import.meta.url)));
+const values=new Map(profile.allParameters.map(p=>[p.id,p.default]));
+const e=new MotionEngine({setParameterValueById:(id,v)=>values.set(id,v),getParameterValueById:id=>values.get(id)},profile,()=>{});
+e.idle=false;e.gaze={x:20,y:-20};e.tick(100);
+assert(e.look.x>e.look.hx,'eyes must lead head');
+for(let i=0;i<120;i++)e.tick(1000/60);
+assert(values.get('AngleX')>8.5&&values.get('AngleX')<=9.01);
+assert(values.get('ParamEyeBallY')<0);
+e.start({id:'priority',compiled:{duration:5,steps:[{kind:'pose'}],tracks:[{id:'AngleX',action:0,start:0,duration:5,points:[[0,-12],[5,-12]]}]}});
+for(let i=0;i<60;i++)e.tick(1000/60);
+assert(Math.abs(values.get('AngleX')+12)<.001,'explicit action must override cursor');
+e.stop();e.gaze=null;for(let i=0;i<360;i++)e.tick(1000/60);
+assert(Math.abs(values.get('AngleX'))<.001,'leaving window must settle');
+e.idle=true;e.sway=true;e.swayPeriod=8;e.clock=0;const xs=[];
+for(let i=0;i<480;i++){e.tick(1000/60);xs.push(values.get('PositionX'));}
+assert(Math.max(...xs)>1&&Math.min(...xs)<-1,'sway must cross both sides');
+assert([...values.values()].every(Number.isFinite));
+console.log('Natural motion: eye/head lag, clamping, action priority, return and full sway cycle passed.');

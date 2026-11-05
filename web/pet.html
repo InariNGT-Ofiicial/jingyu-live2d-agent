@@ -1,1 +1,25 @@
-<!doctype html><html lang="zh"><meta charset="utf-8"><title>鲸语桌宠</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}canvas{display:block}#error{position:absolute;top:0;color:#a43}</style><canvas id="pet"></canvas><span id="error"></span><script src="vendor/live2dcubismcore.min.js"></script><script src="vendor/pixi.min.js"></script><script src="vendor/cubism4.colors.min.js"></script><script type="module" src="pet.mjs"></script></html>
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>鲸语网页桌宠</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font:12px 'Segoe UI','Microsoft YaHei',sans-serif;color:#315447}
+#pet-stage{position:absolute;inset:0;overflow:hidden}canvas{display:block;width:100%;height:100%;touch-action:none}
+#pet-tools{position:absolute;z-index:10;top:4px;left:50%;transform:translateX(-50%);display:flex;gap:4px;align-items:center;padding:5px;background:#f6fbf2e8;border:1px solid #b8d2c5;border-radius:8px;opacity:0;transition:opacity .2s;white-space:nowrap}
+body:hover #pet-tools,#pet-tools:focus-within{opacity:1}.drag-handle{app-region:drag;-webkit-app-region:drag;cursor:move;padding:5px 10px;user-select:none}
+#pet-tools button{font:inherit;border:0;border-radius:4px;background:#e1ede4;color:#315447;padding:5px 8px;cursor:pointer;app-region:no-drag}
+#error{position:absolute;top:50px;left:12px;right:12px;color:#8a342d;background:#fff6e8;padding:10px;border-radius:6px;white-space:pre-wrap}#error:empty{display:none}
+.touch-feedback{position:absolute;top:10%;left:12%;right:12%;pointer-events:none;text-align:center;background:#fffffff0;border-radius:10px;padding:10px;font-size:13px;line-height:1.7}.touch-feedback:empty{display:none}
+[hidden]{display:none!important}
+#pet-settings{position:absolute;z-index:11;top:48px;right:8px;left:8px;max-height:calc(100% - 65px);overflow:auto;background:#f7fbf5f5;border:1px solid #b8d2c5;border-radius:12px;padding:16px;box-sizing:border-box;box-shadow:0 8px 25px #294b4022;line-height:1.7}
+.settings-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:15px}.settings-head button{border:0;background:none;font-size:20px;color:#315447;cursor:pointer}
+#pet-settings label{display:flex;align-items:center;gap:8px;margin:9px 0;flex-wrap:wrap}input[type=checkbox],input[type=range]{accent-color:#487f65}input[type=range]{width:100px;flex:1}
+#pet-settings summary{cursor:pointer;font-weight:600;padding:9px 0;border-top:1px solid #dce7dc}#pet-settings p{font-size:11px;color:#648273}#pet-settings output{min-width:36px}
+#stocking-controls{padding:0!important;font-size:12px!important}#stockings-reset{padding:6px 10px;border:1px solid #b8d2c5;border-radius:6px;background:#e4eee6;color:#315447}
+</style></head><body>
+<div id="pet-stage"><canvas id="pet"></canvas></div>
+<div id="pet-tools" hidden><span class="drag-handle" title="按住这里拖动桌宠">⠿ 移动</span><button id="pet-settings-button" aria-controls="pet-settings" aria-expanded="false">互动</button><button data-control="smaller" title="缩小">−</button><button data-control="larger" title="放大">＋</button><button data-control="click-through" title="穿透后从系统托盘右键恢复交互">穿透</button><button data-control="close" title="关闭桌宠">×</button></div>
+<span id="error" role="alert"></span>
+<section id="pet-settings" hidden aria-label="桌宠互动设置"><div class="settings-head"><strong>角色互动</strong><button id="close-pet-settings" aria-label="关闭互动设置">×</button></div>
+<label><input id="touch-toggle" type="checkbox" checked>点击互动与长按拖动</label><label><input id="special-touch-toggle" type="checkbox" checked>胸部 / 大腿分区反馈</label><label><input id="gaze-toggle" type="checkbox" checked><span id="gaze-label">视线跟随</span></label><p id="touch-status">短按触发反馈；长按头部 / 胸部拖动。移动窗口请拖顶部「移动」。</p>
+<details><summary>待机与身体动态</summary><label><input id="random-idle-toggle" type="checkbox" checked>随机待机事件</label><label><input id="sway-toggle" type="checkbox" checked>周期身体摇晃</label><label>摇晃幅度<input id="sway-strength" type="range" min="0" max="1" step="0.05" value=".65"><output id="sway-value"></output></label><label>摇晃周期<input id="sway-period" type="range" min="4" max="16" value="8"><output id="sway-seconds"></output></label><label>胸部物理<input id="chest-gain" type="range" min="1" max="1.8" step=".1" value="1.3"><output id="chest-value"></output></label></details>
+<details open><summary>服装交互</summary><div id="stocking-controls-host"></div></details><p>穿透模式会停止接收点击；在系统托盘右键可恢复交互。</p></section>
+<script src="vendor/live2dcubismcore.min.js"></script><script src="vendor/pixi.min.js"></script><script src="vendor/cubism4.colors.min.js"></script><script type="module" src="pet.mjs"></script></body></html>
