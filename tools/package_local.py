@@ -1,5 +1,6 @@
 """Package the current source snapshot and complete author model for local use."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -185,13 +186,20 @@ def seal(stage, output):
         rel = p.relative_to(stage).as_posix()
         assert not rel.startswith('.local/') or rel in LOCAL_FILES, rel
         assert p.suffix != '.dpapi', rel
+    print(f'Hashing {len(files)} files with 8 workers...', flush=True)
+    def record(p):
+        return {'path':p.relative_to(stage).as_posix(),'bytes':p.stat().st_size,'sha256':digest(p)}
+    records=[]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for value in pool.map(record, files):
+            records.append(value)
+            if len(records)%10000==0:print(f'Hashed {len(records)}/{len(files)} files',flush=True)
     write_json(stage / 'PACKAGE-MANIFEST.json', {
         'version': meta['version'], 'distribution':meta['distribution'],
         'runtimes':meta.get('runtimesBundled',{}),
         'sourceCommit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'modelFiles':sum(p.relative_to(stage).parts[0]=='model' for p in files),
-        'files': [{'path': p.relative_to(stage).as_posix(), 'bytes': p.stat().st_size,
-                   'sha256': digest(p)} for p in files]})
+        'files': records})
     files.append(stage / 'PACKAGE-MANIFEST.json')
     output.parent.mkdir(parents=True, exist_ok=True)
     print('Hash manifest complete; compressing integrated package...', flush=True)
