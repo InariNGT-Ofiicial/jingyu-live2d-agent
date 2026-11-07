@@ -139,11 +139,25 @@ function updateUI(){
 }
 async function loadModel(){
   const canvas=$('model-canvas');
-  if(!window.PIXI?.live2d?.Live2DModel||!window.Live2DCubismCore)throw new Error('本地 Live2D 运行库未能加载，请刷新页面。');
+  const cubism=window.Live2DCubismCore;
+  if(typeof cubism?.Moc?.fromArrayBuffer!=='function' || typeof cubism?.Model?.fromMoc!=='function'){
+    throw new Error('Cubism Core 未加载或缺少模型接口。请运行 python launch.py --check 核对 web/vendor/live2dcubismcore.min.js，安装官方 Cubism SDK for Web 的 Core 后按 Ctrl+F5 重新加载。');
+  }
+  if(!window.PIXI?.Application)throw new Error('无法加载 web/vendor/pixi.min.js，请从同一版工作台恢复此文件。');
+  if(!window.PIXI.live2d?.Live2DModel)throw new Error('无法加载 web/vendor/cubism4.colors.min.js，请恢复工作台附带的渲染器文件。');
   pixi=new PIXI.Application({view:canvas,width:Math.max(1,$('scene').clientWidth),height:Math.max(1,$('scene').clientHeight),backgroundAlpha:0,antialias:true,autoDensity:true,resolution:Math.min(devicePixelRatio||1,1.5),powerPreference:'high-performance'});
   PIXI.live2d.Live2DModel.registerTicker(PIXI.Ticker);
   const setStockingShader=installStockingShader(pixi.renderer.gl);
-  model=await PIXI.live2d.Live2DModel.from('/model/大肥鱼.model3.json',{autoInteract:false,autoUpdate:true,motionPreload:'NONE'});
+  const slowLoad=setTimeout(()=>{
+    $('loading').querySelector('small').textContent='仍在等待模型或 Cubism Core 初始化。可以运行 python launch.py --check 核对文件，再按 Ctrl+F5 重新加载。';
+  },15000);
+  try {
+    model=await PIXI.live2d.Live2DModel.from('/model/大肥鱼.model3.json',{autoInteract:false,autoUpdate:true,motionPreload:'NONE'});
+  } catch(error) {
+    throw new Error(`Cubism 加载大肥鱼模型失败（${error.message||error}）。请运行 python launch.py --check 核对模型文件和 Core 版本。`);
+  } finally {
+    clearTimeout(slowLoad);
+  }
   pixi.stage.addChild(model);physics=model.internalModel.physics;
   const core=model.internalModel.coreModel;
   engine=new MotionEngine(core,profile,(status,job)=>{

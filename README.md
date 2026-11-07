@@ -64,6 +64,8 @@ python launch.py --model-dir "D:/your-model/DeepSeek" --check
 python launch.py --model-dir "D:/your-model/DeepSeek"
 ```
 
+自检的 `modelReady` 表示模型文件齐全。`cubismCore` 列出 Core 文件路径、实际 SHA-256 和已验证版本的 SHA-256。缺少文件或误存为空文件、HTML 网页时，自检以状态码 1 结束。仅哈希不同时可继续试用，浏览器完成加载后 `/api/state` 才会显示 `rendererReady`。替换 Core 后在舞台按 Ctrl+F5 重新加载。
+
 也可双击 `Start-Beta.cmd`。默认舞台为 <http://127.0.0.1:61942/>。
 `model/DeepSeek/` 存在时会自动加载，已配置的路径记在 `.local/`。
 模型配置生成的 `web/data/model-profile.json` 和压力测试目录在启动时重建，不进入 Git。
