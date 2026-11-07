@@ -70,7 +70,7 @@ app.whenReady().then(async()=>{
  pointerTimer=setInterval(()=>{
   if(!ready||!win||win.isDestroyed())return;
   const point=screen.getCursorScreenPoint(),bounds=win.getContentBounds();
-  win.webContents.send('pet:pointer',{x:point.x,y:point.y,window:bounds,desktop:screen.getDisplayMatching(bounds).workArea});
+  win.webContents.send('pet:pointer',{x:point.x,y:point.y,window:bounds,desktop:screen.getDisplayMatching(bounds).workArea,clickThrough:passThrough});
  },40);
  await win.loadURL(base.origin+'/pet.html?desktop=1');
  setTimeout(()=>{if(!ready)failure('模型未在 40 秒内加载完成，请检查工作台和模型资源');},40000).unref();

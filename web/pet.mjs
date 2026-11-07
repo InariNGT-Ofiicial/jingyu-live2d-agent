@@ -12,7 +12,15 @@ async function api(path,data){
 try{
  const stage=document.querySelector('#pet-stage'),canvas=document.querySelector('canvas');
  if(native){
-  document.querySelector('#pet-tools').hidden=false;
+  const tools=document.querySelector('#pet-tools');
+  tools.hidden=false;
+  // Windows handles the native drag grip as a title bar. DOM hover drops there.
+  const stopToolbarTracking=native.onPointer(({x,y,window:bounds,clickThrough=false})=>{
+   const inside=x>=bounds.x && x<bounds.x+bounds.width && y>=bounds.y && y<bounds.y+bounds.height;
+   tools.hidden=clickThrough;
+   tools.toggleAttribute('data-pointer-inside',inside && !clickThrough);
+  });
+  window.addEventListener('beforeunload',stopToolbarTracking,{once:true});
   for(const button of document.querySelectorAll('[data-control]'))button.onclick=()=>native.control(button.dataset.control);
   window.addEventListener('keydown',e=>{if(e.key==='Escape')native.control('close');});
   let lastZoom=0;stage.addEventListener('wheel',e=>{e.preventDefault();if(performance.now()-lastZoom>120){native.control(e.deltaY<0?'larger':'smaller');lastZoom=performance.now();}},{passive:false});
