@@ -214,6 +214,12 @@ VTS Spout 2560×1600 源已实测透明 GIF 与 512×768 / 15 FPS MP4；
 已合入提交的作者也可在 [GitHub 贡献记录](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/graphs/contributors) 中查看。
 参与方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
+## 许可证
+
+维护者有权授权的工作台原创代码采用 [MIT 许可证](LICENSE.txt)。可以商用、修改和再分发，分发副本或实质性部分时须保留版权及许可声明。
+
+第三方代码及贡献保留原权利人的授权条款。角色模型、贴图、PSD、Cubism Core 和语音素材分别遵循其权利人的使用条件。第三方依赖的来源与声明见 [THIRD-PARTY.txt](THIRD-PARTY.txt)。
+
 ## 第三方依赖
 
 第三方库、原始版权头与许可见 [THIRD-PARTY.txt](THIRD-PARTY.txt) 和 `licenses/`。
