@@ -4,7 +4,7 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font:12px 'Segoe UI','Microsoft YaHei',sans-serif;color:#315447}
 #pet-stage{position:absolute;inset:0;overflow:hidden}canvas{display:block;width:100%;height:100%;touch-action:none}
 #pet-tools{position:absolute;z-index:10;top:4px;left:50%;transform:translateX(-50%);display:flex;gap:4px;align-items:center;padding:5px;background:#f6fbf2e8;border:1px solid #b8d2c5;border-radius:8px;opacity:0;transition:opacity .2s;white-space:nowrap}
-body:hover #pet-tools,#pet-tools:focus-within{opacity:1}.drag-handle{app-region:drag;-webkit-app-region:drag;cursor:move;padding:5px 10px;user-select:none}
+#pet-tools[data-pointer-inside],#pet-tools:focus-within{opacity:1}.drag-handle{app-region:drag;-webkit-app-region:drag;cursor:move;padding:5px 10px;user-select:none}
 #pet-tools button{font:inherit;border:0;border-radius:4px;background:#e1ede4;color:#315447;padding:5px 8px;cursor:pointer;app-region:no-drag}
 #error{position:absolute;top:50px;left:12px;right:12px;color:#8a342d;background:#fff6e8;padding:10px;border-radius:6px;white-space:pre-wrap}#error:empty{display:none}
 .touch-feedback{position:absolute;top:10%;left:12%;right:12%;pointer-events:none;text-align:center;background:#fffffff0;border-radius:10px;padding:10px;font-size:13px;line-height:1.7}.touch-feedback:empty{display:none}
