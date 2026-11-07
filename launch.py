@@ -1,8 +1,28 @@
 """Portable local beta launcher, preferring the complete bundled model."""
-import argparse,json,os,subprocess,sys,time,webbrowser
+import argparse,hashlib,json,os,subprocess,sys,time,webbrowser
 from pathlib import Path
 from urllib.request import urlopen
 ROOT=Path(__file__).resolve().parent
+def cubism_core_check(root):
+    name = 'live2dcubismcore.min.js'
+    path = Path('web', 'vendor', name)
+    manifest = json.loads((root / 'vendor-sources.json').read_text(encoding='utf-8'))
+    expected = next(entry['sha256'] for entry in manifest if entry['file'] == name)
+    result = {'path': path.as_posix(), 'expectedSha256': expected, 'sha256': None}
+    try:
+        content = (root / path).read_bytes()
+    except FileNotFoundError:
+        return {**result, 'status': 'missing', 'message': '请从 Live2D 官方 Cubism SDK for Web 安装 Core 到指定路径。'}
+    actual = hashlib.sha256(content).hexdigest()
+    result['sha256'] = actual
+    prefix = content.removeprefix(b'\xef\xbb\xbf').lstrip().lower()
+    if not prefix or prefix.startswith((b'<!doctype html', b'<html')):
+        return {**result, 'status': 'invalid', 'message': 'Core 文件为空或为 HTML 网页。请用官方 SDK 的 JavaScript 文件替换。'}
+    if actual != expected:
+        return {**result, 'status': 'different', 'message': '与已验证版本的 SHA-256 不同。请打开舞台验证此版本的兼容性。'}
+    return {**result, 'status': 'verified'}
+
+
 def main():
  p=argparse.ArgumentParser();p.add_argument('--model-dir');p.add_argument('--port',type=int,default=61942);p.add_argument('--no-browser',action='store_true');p.add_argument('--check',action='store_true');a=p.parse_args()
  if not 1024<=a.port<=65535:p.error('port 必须在 1024..65535')
@@ -23,7 +43,11 @@ def main():
  for rel in [refs['Moc'],*refs['Textures']]:
   if not (MODEL_ROOT/rel).is_file():raise SystemExit('缺少模型资产：'+rel)
  if a.check:
-  print(json.dumps({'version':'1.5.0','python':sys.version.split()[0],'modelReady':True},ensure_ascii=False));return
+  core = cubism_core_check(ROOT)
+  print(json.dumps({'version':'1.5.0','python':sys.version.split()[0],'modelReady':True,'cubismCore':core},ensure_ascii=False))
+  if core['status'] in ('missing','invalid'):
+   raise SystemExit(1)
+  return
  saved.parent.mkdir(exist_ok=True);saved.write_text(str(model.resolve()),encoding='utf-8')
  url=f'http://127.0.0.1:{a.port}'
  try:
