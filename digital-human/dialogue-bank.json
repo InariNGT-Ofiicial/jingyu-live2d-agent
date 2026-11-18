@@ -1,0 +1,252 @@
+[
+  {
+    "id": "hello",
+    "description": "观众单独打招呼",
+    "action": "wave",
+    "aliases": [
+      "你好",
+      "哈喽",
+      "哈啰",
+      "嗨",
+      "晚上好",
+      "初次见面",
+      "DeepseekChan你好",
+      "主播你好"
+    ],
+    "lines": [
+      "你好呀，欢迎来聊天。",
+      "嗨，我是DeepseekChan。"
+    ]
+  },
+  {
+    "id": "morning",
+    "description": "单独问早或请向大家说早安",
+    "action": "wave",
+    "aliases": [
+      "早",
+      "早上好",
+      "早安",
+      "跟大家说声早安吧",
+      "DeepseekChan跟大家说声早安吧"
+    ],
+    "lines": [
+      "早安，大家好！",
+      "早呀，今天也见到你啦。"
+    ]
+  },
+  {
+    "id": "thanks",
+    "description": "单纯道谢或说辛苦了",
+    "action": "smile",
+    "aliases": [
+      "谢谢",
+      "谢谢你",
+      "辛苦了",
+      "多谢",
+      "谢谢DeepseekChan"
+    ],
+    "lines": [
+      "不客气呀。",
+      "嗯，能帮上忙就好。"
+    ]
+  },
+  {
+    "id": "intro",
+    "description": "询问主播自身姓名或请简单自我介绍",
+    "action": "nod",
+    "aliases": [
+      "你叫什么",
+      "你是谁",
+      "介绍一下自己",
+      "做个自我介绍",
+      "你叫什么名字",
+      "你的呼号是什么",
+      "怎么称呼你"
+    ],
+    "lines": [
+      "我是DeepseekChan，鲸语直播间里的数字人。",
+      "叫我DeepseekChan就好。"
+    ]
+  },
+  {
+    "id": "visible",
+    "description": "只询问能否看见自己的这条弹幕",
+    "action": "read",
+    "aliases": [
+      "能看到我发的弹幕吗",
+      "看得见我的弹幕吗",
+      "能看到这条弹幕吗",
+      "能看见我发的消息吗"
+    ],
+    "lines": [
+      "能，我看到这条弹幕啦。",
+      "看得到，你接着说。"
+    ]
+  },
+  {
+    "id": "goodnight",
+    "description": "单独道晚安",
+    "action": "nod",
+    "aliases": [
+      "晚安",
+      "说声晚安",
+      "跟大家说声晚安"
+    ],
+    "lines": [
+      "晚安，好好休息。",
+      "晚安，我们下次见。"
+    ]
+  },
+  {
+    "id": "present",
+    "description": "只问主播是否在场或在听",
+    "action": "listen",
+    "aliases": [
+      "在吗",
+      "你在吗",
+      "DeepseekChan在吗",
+      "你还在听吗"
+    ],
+    "lines": [
+      "在呢，你说。",
+      "我在听。"
+    ]
+  },
+  {
+    "id": "bye",
+    "description": "单独告别",
+    "action": "wave",
+    "aliases": [
+      "拜拜",
+      "再见",
+      "我先下啦",
+      "下次见"
+    ],
+    "lines": [
+      "好，下次见。",
+      "拜拜，回头聊。"
+    ]
+  },
+  {
+    "id": "wave",
+    "description": "请求挥手",
+    "action": "wave",
+    "aliases": [
+      "挥挥手",
+      "挥个手",
+      "跟我挥挥手",
+      "挥手打个招呼"
+    ],
+    "lines": [
+      "嗨，看到你啦。",
+      "来，打个招呼。"
+    ],
+    "exact_only": true,
+    "mode": null
+  },
+  {
+    "id": "nod",
+    "description": "请求点头",
+    "action": "nod",
+    "aliases": [
+      "点点头",
+      "点个头",
+      "给我点点头"
+    ],
+    "lines": [
+      "嗯，我在听。",
+      "好呀。"
+    ],
+    "exact_only": true,
+    "mode": null
+  },
+  {
+    "id": "smile",
+    "description": "请求微笑",
+    "action": "smile",
+    "aliases": [
+      "笑一个",
+      "笑一笑",
+      "给我一个微笑"
+    ],
+    "lines": [
+      "送你一个微笑。",
+      "笑给你看。"
+    ],
+    "exact_only": true,
+    "mode": null
+  },
+  {
+    "id": "think",
+    "description": "请求思考动作",
+    "action": "think",
+    "aliases": [
+      "做个思考的动作",
+      "做个思考表情"
+    ],
+    "lines": [
+      "让我想一想。",
+      "嗯，思考一下。"
+    ],
+    "exact_only": true,
+    "mode": null
+  },
+  {
+    "id": "listen",
+    "description": "请求认真倾听",
+    "action": "listen",
+    "aliases": [
+      "认真听我说",
+      "先听我说完",
+      "听我说嘛"
+    ],
+    "lines": [
+      "嗯，你慢慢说。",
+      "好，我认真听。"
+    ],
+    "exact_only": true,
+    "mode": null
+  },
+  {
+    "id": "quiet",
+    "description": "请求安静陪伴",
+    "action": "listen",
+    "aliases": [
+      "安静陪我一会儿",
+      "陪我待一会儿",
+      "安静陪着我",
+      "我们安静待一会儿"
+    ],
+    "lines": [
+      "好，我陪着你。",
+      "嗯，我就在这里。"
+    ],
+    "exact_only": true,
+    "mode": "quiet"
+  },
+  {
+    "id": "resume",
+    "description": "结束安静陪伴",
+    "action": "nod",
+    "aliases": [
+      "继续聊吧",
+      "我们继续聊",
+      "接着聊天吧"
+    ],
+    "lines": [
+      "好呀，接着聊。",
+      "嗯，你想说什么？"
+    ],
+    "exact_only": true,
+    "mode": "chat"
+  },
+  {
+    "id": "clarify_reference",
+    "description": "对方引用了本次通话尚未谈及的办法",
+    "action": "listen",
+    "aliases": [],
+    "without_context": ["你刚才说的办法有什么缺点", "刚才那个办法有什么缺点", "你说的是哪个办法", "刚才说到哪儿了", "你说的第二种是什么", "刚才那个办法怎么做"],
+    "lines": ["你指的是哪个办法？提醒我一下。", "你想接着聊哪件事呀？"],
+    "exact_only": true
+  }
+]

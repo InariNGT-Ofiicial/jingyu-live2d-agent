@@ -1,0 +1,80 @@
+{
+  "version": 5,
+  "mobileDirectory": "phone-mobile-v5",
+  "idleAfterMs": 45000,
+  "clips": {
+    "front-breathe": {
+      "file": "phone-delivery-v2/front-breathe.mp4",
+      "cooldownMs": 0,
+      "label": "平静呼吸"
+    },
+    "h3-shoulders": {
+      "file": "phone-delivery-v2/h3-shoulders.mp4",
+      "cooldownMs": 27000,
+      "label": "舒展肩膀"
+    },
+    "h3-ribbon": {
+      "file": "phone-delivery-v2/h3-ribbon.mp4",
+      "cooldownMs": 45000,
+      "label": "整理领结"
+    },
+    "acknowledge": {
+      "file": "phone-delivery-v2/acknowledge.mp4",
+      "cooldownMs": 18000,
+      "label": "点头回应"
+    },
+    "read-request": {
+      "file": "phone-delivery-v2/read-request.mp4",
+      "cooldownMs": 35000,
+      "label": "低眼读消息"
+    },
+    "wave": {
+      "file": "phone-framing-v4/wave.mp4",
+      "cooldownMs": 35000,
+      "label": "轻挥手"
+    },
+    "listen": {
+      "file": "phone-framing-v4/listen.mp4",
+      "cooldownMs": 18000,
+      "label": "专注倾听"
+    },
+    "think": {
+      "file": "phone-framing-v4/think.mp4",
+      "cooldownMs": 25000,
+      "label": "托腮思考"
+    },
+    "smile": {
+      "file": "phone-framing-v4/smile.mp4",
+      "cooldownMs": 24000,
+      "label": "浅笑"
+    }
+  },
+  "pools": {
+    "idle": [
+      "front-breathe",
+      "h3-shoulders",
+      "front-breathe",
+      "h3-ribbon",
+      "front-breathe",
+      "smile"
+    ],
+    "listening": [
+      "listen",
+      "front-breathe"
+    ],
+    "thinking": [
+      "think",
+      "front-breathe"
+    ],
+    "speaking": [
+      "front-breathe",
+      "acknowledge"
+    ],
+    "quiet": [
+      "front-breathe",
+      "h3-shoulders",
+      "front-breathe",
+      "front-breathe"
+    ]
+  }
+}

@@ -1,4 +1,10 @@
-# 鲸语 · Jingyu Live2D Agent
+# 鲸语 · 数字人视频电话
+
+本分支收录角色视频电话的动作播放器、语音识别、上下文回答、声音合成和 H3 工作流。从零搭建、换角色和手机接听请从 **[数字人快速开始](digital-human/README.md)** 进入。运行 `python avatar.py --demo` 与 `python preview.py` 可以先在普通电脑预览动作。
+
+原 Live2D 工作台位于 [main 分支](https://github.com/InariNGT-Ofiicial/jingyu-live2d-agent/tree/main)。以下保留工作台原有文档。
+
+## 鲸语 · Jingyu Live2D Agent
 
 **1.5.0 · Windows 本地动作工作台**
 

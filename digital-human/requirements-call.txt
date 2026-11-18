@@ -1,0 +1,8 @@
+transformers==5.16.1
+aiohttp==3.12.15
+numpy==1.26.4
+accelerate
+requests
+soundfile
+librosa
+Pillow
